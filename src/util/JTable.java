@@ -46,6 +46,26 @@ public class JTable {
         System.out.println(tableExit.render());
     }
     public void displayHelpTable(){
+        Table tableHelp = new Table(1, BorderStyle.CLASSIC_LIGHT_WIDE,ShownBorders.SURROUND);
+        tableHelp.addCell("1.      Press       l : Display product as table");
+        tableHelp.addCell("2.      Press       w : Create a new product");
+        tableHelp.addCell("3.      Press       r : View product details by code");
+        tableHelp.addCell("4       Press       e : Edit an existing product by code");
+        tableHelp.addCell("5.      Press       d : Delete an existing product by code");
+        tableHelp.addCell("6.      Press       s : Search an existing product by name");
+        tableHelp.addCell("6.      Press       o : Set row of data");
+        tableHelp.addCell("7.      Press       c : Commit transaction data");
+        tableHelp.addCell("8.      Press       k : Backup data");
+        tableHelp.addCell("9.      Press       t : Restore data");
+        tableHelp.addCell("10.     Press       f : Navigate pagination to the first page");
+        tableHelp.addCell("11.     Press       p : Navigate pagination to the previous page");
+        tableHelp.addCell("12.     Press       n : Navigate pagination to the next page");
+        tableHelp.addCell("13.     Press       l : Navigate pagination to the last page");
+        tableHelp.addCell("14.     Press       h : Help");
+        tableHelp.addCell("15.     Press       b : Step Back of the Application");
+        tableHelp.addCell("16.     Press       x : Exit the Application");
+        System.out.println(tableHelp.render());
+
     }
 
 }
