@@ -51,6 +51,8 @@ public class MainTest {
                 }case "t","T"->{
                     //restore code
                 }case "h","H"->{
+                    System.out.println();
+                    System.out.println("# Help Instruction");
                     JTable tableHelp = new JTable();
                     tableHelp.displayHelpTable();
                 }
