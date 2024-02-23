@@ -65,6 +65,7 @@ public class MainTest {
                 default -> {
                     //default code
                     System.out.println("Invaid input");
+                    System.out.println("Invaid input");
                 }
             }
         }while(isTrue);
