@@ -206,7 +206,7 @@ public class MethodForFile {
         }
 
     }
-    public static void backUpData(String sourceFilePath, String backupFilePath) {
+    public void backUpData(String sourceFilePath, String backupFilePath) {
         try {
             Path sourcePath = Path.of(sourceFilePath);
             Path backupPath = Path.of(backupFilePath);
@@ -231,6 +231,46 @@ public class MethodForFile {
                 System.out.println("Backup created successfully.");
             } else {
                 System.out.println("Source file does not exist.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static File[] getBackupFiles(String backupDirectory) {
+        File backupDir = new File(backupDirectory);
+        return backupDir.listFiles();
+    }
+
+    public void listBackupFiles(String backupDirectory) {
+        File backupDir = new File(backupDirectory);
+        File[] backupFiles = backupDir.listFiles();
+
+        if (backupFiles != null && backupFiles.length > 0) {
+            Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+            table.addCell("Backup Files:");
+
+            for (int i = 0; i < backupFiles.length; i++) {
+                table.addCell((i + 1) + ". " + backupFiles[i].getName());
+            }
+
+            System.out.println(table.render());
+        } else {
+            System.out.println("No backup files found.");
+        }
+    }
+    public void restoreData(String sourceFilePath, String backupDirectory, int fileNumber) {
+        try {
+            File[] backupFiles = getBackupFiles(backupDirectory);
+
+            if (fileNumber >= 1 && fileNumber <= backupFiles.length) {
+                File selectedFile = backupFiles[fileNumber - 1];
+                String backupFileName = selectedFile.getName();
+                String restoredFilePath = sourceFilePath.replaceFirst("[.][^.]+$", "_restored" + backupFileName.substring(backupFileName.lastIndexOf(".")));
+
+                Files.copy(selectedFile.toPath(), Path.of(restoredFilePath), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Data restored successfully to: " + restoredFilePath);
+            } else {
+                System.out.println("Invalid file number.");
             }
         } catch (IOException e) {
             e.printStackTrace();
