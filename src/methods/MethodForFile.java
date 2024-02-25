@@ -5,11 +5,10 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.Target;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import static java.lang.System.*;
@@ -66,6 +65,30 @@ public class MethodForFile {
             }
         }
 
+    }
+    public List<Product> readProductsFromFile(String fileName) {
+        List<Product> productList = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    Product product = new Product();
+                    product.setCode(parts[0].trim());
+                    product.setName(parts[1].trim());
+                    product.setPrice(Double.parseDouble(parts[2].trim()));
+                    product.setQuantity(Integer.parseInt(parts[3].trim()));
+                    product.setDate(LocalDate.parse(parts[4].trim())); // Assuming date is stored in ISO_LOCAL_DATE format
+                    productList.add(product);
+                } else {
+                    System.out.println("Invalid data in file: " + line);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        return productList;
     }
     public void viewAllProduct(List<Product> productList){
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);

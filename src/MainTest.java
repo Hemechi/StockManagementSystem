@@ -28,6 +28,7 @@ public class MainTest {
             switch(option){
                 case "l","L"-> {
                     //display code
+                    productList = method.readProductsFromFile("product.txt");
                     method.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
