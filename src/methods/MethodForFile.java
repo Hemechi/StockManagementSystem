@@ -202,4 +202,12 @@ public class MethodForFile {
             }
         }
     }
+
+    public void randomProduct(List<Product> productList){
+        out.print("Enter random amount ");
+        int amount = scanner.nextInt();
+        out.print("Are you sure you to random  "+amount+" Product? [Y/n]: ");
+        char option = (char) scanner.nextShort();
+    }
+
 }
