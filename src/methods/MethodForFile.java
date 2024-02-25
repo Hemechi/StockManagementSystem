@@ -6,9 +6,9 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.*;
-import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import static java.lang.System.*;
@@ -22,9 +22,9 @@ public class MethodForFile {
         out.print("Enter product name: ");
         product.setName(scanner.nextLine());
         out.print("Enter product price:");
-        product.setPrice(scanner.nextDouble());
+        product.setPrice(Double.parseDouble(scanner.nextLine()));
         out.print("Enter product quantity:");
-        product.setQuantity(scanner.nextInt());
+        product.setQuantity(Integer.parseInt(scanner.nextLine()));
         product.setDate(LocalDate.now());
         productList.add(product);
 
@@ -33,7 +33,8 @@ public class MethodForFile {
             writer.write(product.getName()+",");
             writer.write(product.getPrice()+",");
             writer.write(product.getQuantity()+",");
-            writer.write(product.getDate()+"\n");
+            writer.write(product.getDate()+",");
+            writer.newLine();
         }catch (IOException e){
             out.println(e.getMessage());
         }
@@ -91,7 +92,12 @@ public class MethodForFile {
         return productList;
     }
     public void viewAllProduct(List<Product> productList){
-        Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+        Table table = new Table(5, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.ALL);
+        table.addCell("Product Code");
+        table.addCell("Product Name");
+        table.addCell("Product Price");
+        table.addCell("Product Quantity");
+        table.addCell("Product Date");
         for(Product product : productList){
             table.addCell("Code : "+product.getCode());
             table.addCell("Name : " +product.getName());
@@ -116,29 +122,40 @@ public class MethodForFile {
             }
         }
     }
-    public void deleteProduct(List<Product> productList){
+    public void deleteProduct(List<Product> productList) {
         out.print("Enter product code: ");
         String code = scanner.nextLine();
-        for(Product product : productList){
-            if (product.getCode().equals(code)){
-                productList.remove(product);
-            }
-        }
-    }
-    public void searchProduct(List<Product> productList){
-        Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
-        out.print("Enter product code: ");
-        String code = scanner.nextLine();
-        for(Product product : productList){
-            if (product.getCode().equals(code)){
-                table.addCell("Code : "+product.getCode());
-                table.addCell("Name : " +product.getName());
-                table.addCell("Price : "+product.getPrice());
-                table.addCell("Quantity : "+product.getQuantity());
-                table.addCell("Date : "+product.getDate());
-                out.println(table.render());
+
+        Iterator<Product> iterator = productList.iterator();
+        while (iterator.hasNext()) {
+            Product product = iterator.next();
+            if (product.getCode().equals(code)) {
+                iterator.remove();
             }
         }
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt"))) {
+            for (Product product : productList) {
+                writer.write(product.getCode() + ",");
+                writer.write(product.getName() + ",");
+                writer.write(product.getPrice() + ",");
+                writer.write(product.getQuantity() + ",");
+                writer.write(product.getDate() + "\n");
+            }
+        } catch (IOException e) {
+            out.println("Error writing to file: " + e.getMessage());
+        }
+
+        out.println("Record deleted successfully.");
+    }
+    public void searchProduct(List<Product> productList){
+        Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+        out.print("Enter product name: ");
+        String name = scanner.nextLine();
+        for(Product product : productList){
+            if (product.getName().contains(name)){
+                viewAllProduct(productList);
+            }
+        }
     }
 }
