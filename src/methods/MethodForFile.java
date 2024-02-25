@@ -110,6 +110,8 @@ public class MethodForFile {
         }
         out.println(table.render());
     }
+
+
     public void readOnlyProduct(List<Product> productList){
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
@@ -209,5 +211,4 @@ public class MethodForFile {
 //            e.printStackTrace();
 //        }
 //    }
-
 }
