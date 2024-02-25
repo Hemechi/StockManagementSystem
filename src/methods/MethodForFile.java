@@ -173,22 +173,4 @@ public class MethodForFile {
             e.printStackTrace();
         }
     }
-//    public static void backUpData(String sourceFilePath, String backupFilePath) {
-//        try {
-//            Path sourcePath = Path.of(sourceFilePath);
-//            Path backupPath = Path.of(backupFilePath);
-//            if (Files.exists(sourcePath)) {
-//                // Create the backup directory if it doesn't exist
-//                Files.createDirectories(backupPath.getParent());
-//                // Copy the file to the backup location
-//                Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
-//                System.out.println("Backup created successfully.");
-//            } else {
-//                System.out.println("Source file does not exist.");
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
 }
