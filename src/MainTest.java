@@ -1,9 +1,17 @@
+import methods.MethodForFile;
+import model.Product;
 import util.UtilTextTable;
 import util.JTable;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainTest {
+     static MethodForFile method = new MethodForFile();
+     static List<Product> productList = new ArrayList<>();
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
@@ -22,23 +30,30 @@ public class MainTest {
             switch(option){
                 case "l","L"-> {
                     //display code
+                    productList = method.readProductsFromFile("product.txt");
+                    method.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
                 }
                 case "w","W"->{
                     //write code
+                    method.createProduct(productList);
                 }
                 case "r","R"->{
                     //read code
+                    method.readOnlyProduct(productList);
                 }
                 case "e","E"->{
                     //edit code
+                    method.editProduct(productList);
                 }
                 case "d","D"->{
                     //delete code
+                    method.deleteProduct(productList);
                 }
                 case "s","S"->{
                     //search code
+                    method.searchProduct(productList);
                 }
                 case "o","O"->{
                     //set row code
@@ -48,6 +63,19 @@ public class MainTest {
                 }
                 case "k","K"->{
                     //back up code
+                    String sourceFilePaths = "product.txt";
+                    String backupDirectory = "backup/";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    String timestamp = dateFormat.format(new Date());
+                    String backupFileName = "backupfile_" + timestamp + ".csv";
+                    String backupFilePath = backupDirectory + backupFileName;
+
+                    System.out.print("Are you sure to Backup [Y/N]: ");
+                    String ch = scanner.nextLine();
+
+                    if (ch.equalsIgnoreCase("y")) {
+                        MethodForFile.backUpData(sourceFilePaths,backupFilePath);
+                    }
                 }case "t","T"->{
                     //restore code
                 }case "h","H"->{
@@ -64,6 +92,7 @@ public class MainTest {
                 }
                 default -> {
                     //default code
+                    System.out.println("Invaid input");
                     System.out.println("Invaid input");
                 }
             }
