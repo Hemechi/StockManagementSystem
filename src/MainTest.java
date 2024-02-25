@@ -1,9 +1,15 @@
+import methods.MethodForFile;
+import model.Product;
 import util.UtilTextTable;
 import util.JTable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainTest {
+     static MethodForFile method = new MethodForFile();
+     static List<Product> productList = new ArrayList<>();
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
@@ -22,23 +28,29 @@ public class MainTest {
             switch(option){
                 case "l","L"-> {
                     //display code
+                    method.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
                 }
                 case "w","W"->{
                     //write code
+                    method.createProduct(productList);
                 }
                 case "r","R"->{
                     //read code
+                    method.readOnlyProduct(productList);
                 }
                 case "e","E"->{
                     //edit code
+                    method.editProduct(productList);
                 }
                 case "d","D"->{
                     //delete code
+                    method.deleteProduct(productList);
                 }
                 case "s","S"->{
                     //search code
+                    method.searchProduct(productList);
                 }
                 case "o","O"->{
                     //set row code
