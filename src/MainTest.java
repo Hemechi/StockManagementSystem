@@ -3,7 +3,9 @@ import model.Product;
 import util.UtilTextTable;
 import util.JTable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -61,6 +63,19 @@ public class MainTest {
                 }
                 case "k","K"->{
                     //back up code
+                    String sourceFilePaths = "product.txt";
+                    String backupDirectory = "backup/";
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    String timestamp = dateFormat.format(new Date());
+                    String backupFileName = "backupfile_" + timestamp + ".csv";
+                    String backupFilePath = backupDirectory + backupFileName;
+
+                    System.out.print("Are you sure to Backup [Y/N]: ");
+                    String ch = scanner.nextLine();
+
+                    if (ch.equalsIgnoreCase("y")) {
+                        MethodForFile.backUpData(sourceFilePaths,backupFilePath);
+                    }
                 }case "t","T"->{
                     //restore code
                 }case "h","H"->{

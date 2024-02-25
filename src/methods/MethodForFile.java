@@ -6,7 +6,9 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.*;
-import java.lang.annotation.Target;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,4 +143,52 @@ public class MethodForFile {
         }
 
     }
+    public static void backUpData(String sourceFilePath, String backupFilePath) {
+        try {
+            Path sourcePath = Path.of(sourceFilePath);
+            Path backupPath = Path.of(backupFilePath);
+            if (Files.exists(sourcePath)) {
+                // Create the backup directory if it doesn't exist
+                Files.createDirectories(backupPath.getParent());
+
+                // Open streams with buffering
+                try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+                     BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(backupPath))) {
+
+                    // Copy data in chunks
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    outputStream.flush(); // Flush the buffer after writing all data
+                }
+
+                System.out.println("Backup created successfully.");
+            } else {
+                System.out.println("Source file does not exist.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+//    public static void backUpData(String sourceFilePath, String backupFilePath) {
+//        try {
+//            Path sourcePath = Path.of(sourceFilePath);
+//            Path backupPath = Path.of(backupFilePath);
+//            if (Files.exists(sourcePath)) {
+//                // Create the backup directory if it doesn't exist
+//                Files.createDirectories(backupPath.getParent());
+//                // Copy the file to the backup location
+//                Files.copy(sourcePath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+//                System.out.println("Backup created successfully.");
+//            } else {
+//                System.out.println("Source file does not exist.");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 }
