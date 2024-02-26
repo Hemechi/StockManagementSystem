@@ -213,7 +213,6 @@ public class MethodForFile {
         if (option == 'Y' || option == 'y') {
             LoadingThread loadingThread = new LoadingThread();
             loadingThread.start();
-
             long startTime = System.currentTimeMillis(); // Record start time
 
             Product[] products = new Product[amount];
@@ -231,12 +230,9 @@ public class MethodForFile {
             long endTime = System.currentTimeMillis(); // Record end time
             long duration = endTime - startTime; // Calculate duration
             double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
-
-            out.println("Write " + amount + " products speeds: ");
             out.println("############################################");
             out.println("# Products have been randomly generated and written to file successfully");
-            out.println("# Time taken: " + durationInSeconds + " seconds"); // Output duration in seconds
-
+            out.println("Write " + amount + " products speeds: "+durationInSeconds+"s");
             loadingThread.interrupt(); // Interrupt the loading thread as writing is done
         } else {
             out.println("Operation cancelled.");
@@ -262,6 +258,7 @@ public class MethodForFile {
 
     public static void writeProductsToFile(List<Product> productList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
+            StringBuilder sb = new StringBuilder();
             for (Product product : productList) {
                 String productDetails = String.join(",",
                         product.getCode(),
@@ -269,12 +266,13 @@ public class MethodForFile {
                         String.valueOf(product.getPrice()),
                         String.valueOf(product.getQuantity()),
                         product.getDate().toString());
-
-                writer.write(productDetails);
-                writer.newLine();
+                sb.append(productDetails).append(System.lineSeparator());
             }
+            writer.write(sb.toString());
         } catch (IOException e) {
             out.println(e.getMessage());
         }
     }
+
+
 }

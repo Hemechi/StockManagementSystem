@@ -32,6 +32,7 @@ public class MainTest {
                 } case "m","M"-> {
                     //random code
                     method.randomProduct(productList);
+
                 }
                 case "w","W"->{
                     //write code
