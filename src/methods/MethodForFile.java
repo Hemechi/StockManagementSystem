@@ -294,10 +294,7 @@ public class MethodForFile {
         char option = scanner.next().charAt(0); // Read the option as a string and get the first character
 
         if (option == 'Y' || option == 'y') {
-            LoadingThread loadingThread = new LoadingThread();
-            loadingThread.start();
             long startTime = System.currentTimeMillis(); // Record start time
-
             // Generate products
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
@@ -313,50 +310,24 @@ public class MethodForFile {
             // Write products to file using a separate thread
             Thread writingThread = new Thread(() -> {
                 writeProductsToFile(productList);
-                loadingThread.stopLoading(); // Stop the loading animation once writing is done
             });
             writingThread.start();
 
-            long endTime = System.currentTimeMillis(); // Record end time
-            long duration = endTime - startTime; // Calculate duration
-            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
-            out.println("############################################");
-            out.println("# Products have been randomly generated and are being written to file...");
-            out.println("Write " + amount + " products speeds: " + durationInSeconds + "s");
             try {
                 writingThread.join(); // Wait for writing thread to finish
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            loadingThread.stopLoading(); // Ensure loading animation is stopped even if writing thread is interrupted
+
+            long endTime = System.currentTimeMillis(); // Record end time
+            long duration = endTime - startTime; // Calculate duration
+            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
+
+            out.println("############################################");
+            out.println("# Products have been randomly generated and written to file.");
+            out.println("Write " + amount + " products speed: " + durationInSeconds + "s");
         } else {
             out.println("Operation cancelled.");
-        }
-    }
-
-    static class LoadingThread extends Thread {
-        private volatile boolean running = true;
-
-        public void stopLoading() {
-            running = false;
-        }
-
-        @Override
-        public void run() {
-            char[] chars = {'|', '/', '-', '.', '\\'};
-            int i = 0;
-            try {
-                while (running) {
-                    out.print("\rLoading " + chars[i]);
-                    i = (i + 1) % chars.length; // Increment i and use modulus to loop through the chars array
-                    Thread.sleep(200); // Increase the delay to 200 milliseconds
-                }
-            } catch (InterruptedException e) {
-                // Thread interrupted, do nothing
-            } finally {
-                // Clear loading animation by printing a carriage return without any text
-                out.print("\r");
-            }
         }
     }
 
