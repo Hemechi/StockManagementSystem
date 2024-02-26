@@ -214,11 +214,12 @@ public class MethodForFile {
             LoadingThread loadingThread = new LoadingThread();
             loadingThread.start();
 
-            Instant start = Instant.now(); // Record start time
+            long startTime = System.currentTimeMillis(); // Record start time
+
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
                 products[i] = new Product();
-                products[i].setCode("CSTAD"+i);
+                products[i].setCode("CSTAD" + i);
                 products[i].setName("Product::" + i);
                 products[i].setPrice(0.0);
                 products[i].setQuantity(0);
@@ -226,19 +227,21 @@ public class MethodForFile {
                 productList.add(products[i]);
             }
             writeProductsToFile(productList); // Write products to file
-            Instant end = Instant.now(); // Record end time
 
-            long timeElapsedMillis = Duration.between(start, end).toMillis(); // Calculate elapsed time in milliseconds
-            double speed = (double) amount / timeElapsedMillis * 1000; // Calculate speed in products per second
+            long endTime = System.currentTimeMillis(); // Record end time
+            long duration = endTime - startTime; // Calculate duration
+            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
 
-            out.println("Write " + amount + " products speeds: " + speed + "s");
+            out.println("Write " + amount + " products speeds: ");
             out.println("############################################");
             out.println("# Products have been randomly generated and written to file successfully");
+            out.println("# Time taken: " + durationInSeconds + " seconds"); // Output duration in seconds
 
             loadingThread.interrupt(); // Interrupt the loading thread as writing is done
         } else {
             out.println("Operation cancelled.");
         }
+
     }
 
     static class LoadingThread extends Thread {
