@@ -36,7 +36,6 @@ public class MainTest {
                     productList = method.readProductsFromFile("product.txt");
                     method.viewAllProduct(productList);
 
-//                    method.listBackupFiles(backupDirectory);
                 }
                 case "m", "M" -> {
                     // random code
