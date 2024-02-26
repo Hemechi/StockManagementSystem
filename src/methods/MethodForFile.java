@@ -265,9 +265,10 @@ public class MethodForFile {
             if (fileNumber >= 1 && fileNumber <= backupFiles.length) {
                 File selectedFile = backupFiles[fileNumber - 1];
                 String backupFileName = selectedFile.getName();
+                String directry="restoredfile/";
                 String restoredFilePath = sourceFilePath.replaceFirst("[.][^.]+$", "_restored" + backupFileName.substring(backupFileName.lastIndexOf(".")));
-
-                Files.copy(selectedFile.toPath(), Path.of(restoredFilePath), StandardCopyOption.REPLACE_EXISTING);
+                String fullPath= directry+restoredFilePath;
+                Files.copy(selectedFile.toPath(), Path.of(fullPath), StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("Data restored successfully to: " + restoredFilePath);
             } else {
                 System.out.println("Invalid file number.");
