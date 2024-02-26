@@ -208,6 +208,7 @@ public class MethodForFile {
         int amount = scanner.nextInt();
         out.print("Are you sure you to random  "+amount+" Product? [Y/n]: ");
         char option = (char) scanner.nextShort();
+        out.println("HEllo");
     }
 
 }
