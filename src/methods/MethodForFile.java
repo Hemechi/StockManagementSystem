@@ -6,6 +6,8 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -65,7 +67,6 @@ public class MethodForFile {
                 productList.set(productList.indexOf(product), updatedProduct);
             }
         }
-
     }
     public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
@@ -203,12 +204,74 @@ public class MethodForFile {
         }
     }
 
-    public void randomProduct(List<Product> productList){
-        out.print("Enter random amount ");
+    public static void randomProduct(List<Product> productList) {
+        out.print("Enter random amount: ");
         int amount = scanner.nextInt();
-        out.print("Are you sure you to random  "+amount+" Product? [Y/n]: ");
-        char option = (char) scanner.nextShort();
-        out.println("HEllo");
+        out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
+        char option = scanner.next().charAt(0); // Read the option as a string and get the first character
+
+        if (option == 'Y' || option == 'y') {
+            LoadingThread loadingThread = new LoadingThread();
+            loadingThread.start();
+
+            Instant start = Instant.now(); // Record start time
+            Product[] products = new Product[amount];
+            for (int i = 0; i < amount; i++) {
+                products[i] = new Product();
+                products[i].setCode("CSTAD"+i);
+                products[i].setName("Product::" + i);
+                products[i].setPrice(0.0);
+                products[i].setQuantity(0);
+                products[i].setDate(LocalDate.now());
+                productList.add(products[i]);
+            }
+            writeProductsToFile(productList); // Write products to file
+            Instant end = Instant.now(); // Record end time
+
+            long timeElapsedMillis = Duration.between(start, end).toMillis(); // Calculate elapsed time in milliseconds
+            double speed = (double) amount / timeElapsedMillis * 1000; // Calculate speed in products per second
+
+            out.println("Write " + amount + " products speeds: " + speed + "s");
+            out.println("############################################");
+            out.println("# Products have been randomly generated and written to file successfully");
+
+            loadingThread.interrupt(); // Interrupt the loading thread as writing is done
+        } else {
+            out.println("Operation cancelled.");
+        }
     }
 
+    static class LoadingThread extends Thread {
+        @Override
+        public void run() {
+            char[] chars = {'|', '/', '-', '\\'};
+            int i = 0;
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    out.print("\rLoading " + chars[i++ % 4]);
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                out.print("\r"); // Clear loading animation
+            }
+        }
+    }
+
+    public static void writeProductsToFile(List<Product> productList) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
+            for (Product product : productList) {
+                String productDetails = String.join(",",
+                        product.getCode(),
+                        product.getName(),
+                        String.valueOf(product.getPrice()),
+                        String.valueOf(product.getQuantity()),
+                        product.getDate().toString());
+
+                writer.write(productDetails);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            out.println(e.getMessage());
+        }
+    }
 }

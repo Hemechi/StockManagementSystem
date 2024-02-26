@@ -2,7 +2,6 @@ import methods.MethodForFile;
 import model.Product;
 import util.UtilTextTable;
 import util.JTable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
