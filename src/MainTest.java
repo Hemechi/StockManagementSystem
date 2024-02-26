@@ -4,6 +4,7 @@ import util.Animation;
 import util.UtilTextTable;
 import util.JTable;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,10 +85,6 @@ public class MainTest {
                 case "t", "T" -> {
                     // restore code
                     method.listBackupFiles(backupDirectory);
-                    System.out.print("Enter the number of the backup file to restore: ");
-                    int fileNumber = scanner.nextInt();
-                    scanner.nextLine(); // Consume the remaining newline character
-                    method.restoreData("product.txt", backupDirectory, fileNumber);
                 }
                 case "h", "H" -> {
                     System.out.println();

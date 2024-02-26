@@ -242,21 +242,28 @@ public class MethodForFile {
     }
 
     public void listBackupFiles(String backupDirectory) {
-        File backupDir = new File(backupDirectory);
-        File[] backupFiles = backupDir.listFiles();
+        try{
+            File backupDir = new File(backupDirectory);
+            File[] backupFiles = backupDir.listFiles();
+            if (backupFiles != null && backupFiles.length > 0) {
+                Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+                table.addCell("Backup Files:");
 
-        if (backupFiles != null && backupFiles.length > 0) {
-            Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
-            table.addCell("Backup Files:");
-
-            for (int i = 0; i < backupFiles.length; i++) {
-                table.addCell((i + 1) + ". " + backupFiles[i].getName());
+                for (int i = 0; i < backupFiles.length; i++) {
+                    table.addCell((i + 1) + ". " + backupFiles[i].getName());
+                }
+                System.out.println(table.render());
+                System.out.print("Enter the number of the backup file to restore: ");
+                int fileNumber = scanner.nextInt();
+                scanner.nextLine(); // Consume the remaining newline character
+                restoreData("product.txt", backupDirectory, fileNumber);
+            } else {
+                System.out.println("No backup files found.");
             }
-
-            System.out.println(table.render());
-        } else {
-            System.out.println("No backup files found.");
+        }catch (Exception e){
+            out.println(e.getMessage());
         }
+
     }
     public void restoreData(String sourceFilePath, String backupDirectory, int fileNumber) {
         try {
