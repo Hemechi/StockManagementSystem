@@ -225,19 +225,26 @@ public class MethodForFile {
                 products[i].setDate(LocalDate.now());
                 productList.add(products[i]);
             }
-            writeProductsToFile(productList); // Write products to file
+
+            // Write products to file using a separate thread
+            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
+            writingThread.start();
 
             long endTime = System.currentTimeMillis(); // Record end time
             long duration = endTime - startTime; // Calculate duration
             double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
             out.println("############################################");
-            out.println("# Products have been randomly generated and written to file successfully");
-            out.println("Write " + amount + " products speeds: "+durationInSeconds+"s");
+            out.println("# Products have been randomly generated and are being written to file...");
+            out.println("Write " + amount + " products speeds: " + durationInSeconds + "s");
+            try {
+                writingThread.join(); // Wait for writing thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             loadingThread.interrupt(); // Interrupt the loading thread as writing is done
         } else {
             out.println("Operation cancelled.");
         }
-
     }
 
     static class LoadingThread extends Thread {
@@ -273,6 +280,5 @@ public class MethodForFile {
             out.println(e.getMessage());
         }
     }
-
 
 }
