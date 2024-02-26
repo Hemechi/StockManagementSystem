@@ -215,6 +215,7 @@ public class MethodForFile {
             loadingThread.start();
             long startTime = System.currentTimeMillis(); // Record start time
 
+            // Generate products
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
                 products[i] = new Product();
@@ -227,7 +228,10 @@ public class MethodForFile {
             }
 
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
+            Thread writingThread = new Thread(() -> {
+                writeProductsToFile(productList);
+                loadingThread.stopLoading(); // Stop the loading animation once writing is done
+            });
             writingThread.start();
 
             long endTime = System.currentTimeMillis(); // Record end time
@@ -241,24 +245,34 @@ public class MethodForFile {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            loadingThread.interrupt(); // Interrupt the loading thread as writing is done
+            loadingThread.stopLoading(); // Ensure loading animation is stopped even if writing thread is interrupted
         } else {
             out.println("Operation cancelled.");
         }
     }
 
     static class LoadingThread extends Thread {
+        private volatile boolean running = true;
+
+        public void stopLoading() {
+            running = false;
+        }
+
         @Override
         public void run() {
-            char[] chars = {'|', '/', '-', '\\'};
+            char[] chars = {'|', '/', '-', '.', '\\'};
             int i = 0;
             try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    out.print("\rLoading " + chars[i++ % 4]);
-                    Thread.sleep(100);
+                while (running) {
+                    out.print("\rLoading " + chars[i]);
+                    i = (i + 1) % chars.length; // Increment i and use modulus to loop through the chars array
+                    Thread.sleep(200); // Increase the delay to 200 milliseconds
                 }
             } catch (InterruptedException e) {
-                out.print("\r"); // Clear loading animation
+                // Thread interrupted, do nothing
+            } finally {
+                // Clear loading animation by printing a carriage return without any text
+                out.print("\r");
             }
         }
     }
@@ -276,6 +290,7 @@ public class MethodForFile {
                 sb.append(productDetails).append(System.lineSeparator());
             }
             writer.write(sb.toString());
+            writer.flush();
         } catch (IOException e) {
             out.println(e.getMessage());
         }
