@@ -1,5 +1,6 @@
 import methods.MethodForFile;
 import model.Product;
+import util.Animation;
 import util.UtilTextTable;
 import util.JTable;
 
@@ -17,10 +18,9 @@ public class MainTest {
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
+        Animation animation = new Animation();
         util.display();
-        System.out.println("#".repeat(25));
-        System.out.println("Data is loading");
-        System.out.println("#".repeat(25));
+        animation.loadData();
         boolean isTrue = true;
         do {
             JTable jtable = new JTable();
@@ -103,7 +103,6 @@ public class MainTest {
                 }
                 default -> {
                     // default code
-                    System.out.println("Invalid input");
                     System.out.println("Invalid input");
                 }
             }
