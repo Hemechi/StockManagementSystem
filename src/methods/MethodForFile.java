@@ -10,15 +10,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.Duration;
-import java.time.Instant;
+
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.System.*;
 
 public class MethodForFile {
     static final Scanner scanner = new Scanner(in);
+
     public void createProduct(List<Product> productList) {
         Product product = new Product();
 
@@ -468,31 +470,32 @@ public class MethodForFile {
             e.printStackTrace();
         }
     }
-
     public static void randomProduct(List<Product> productList) {
+        int amount = 0;
+        char option = ' ';
+        boolean validInput = false;
 
-        out.print("Choose an option:\n1. Write to file\n2. Read from file\nEnter your choice: ");
-        int choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-                randomWriteProduct(productList);
-                break;
-            case 2:
-                readProductsFromFile();
-                break;
-            default:
-                out.println("Invalid choice. Operation cancelled.");
+        while (!validInput) {
+            try {
+                out.print("Enter random amount: ");
+                amount = scanner.nextInt();
+                out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
+                option = scanner.next().charAt(0);
+                validInput = true;
+            } catch (InputMismatchException e) {
+                out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // Consume invalid input
+            }
         }
-    }
-
-    public static void randomWriteProduct(List<Product> productList) {
-        out.print("Enter random amount: ");
-        int amount = scanner.nextInt();
-        out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
-        char option = scanner.next().charAt(0); // Read the option as a string and get the first character
 
         if (option == 'Y' || option == 'y') {
-            long startTime = currentTimeMillis(); // Record start time
+            long startTime = currentTimeMillis();
+            // Record start time
+            // Start loading animation thread
+            Thread loadingThread = new Thread(() -> {
+                showLoadingAnimation();
+            });
+            loadingThread.start();
             // Generate products
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
@@ -504,19 +507,30 @@ public class MethodForFile {
                 products[i].setDate(LocalDate.now());
                 productList.add(products[i]);
             }
-            // Write products to file using a separate thread
+
+
+
+            // Start writing products to file thread
             Thread writingThread = new Thread(() -> {
                 writeProductsToFile(productList);
             });
             writingThread.start();
 
-            long endTime = currentTimeMillis(); // Record end time
-            long duration = endTime - startTime; // Calculate duration
-            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
+            try {
+                // Wait for both threads to finish
+                loadingThread.join();
+                writingThread.join();
 
-            out.println("############################################");
-            out.println("# Products have been randomly generated and written to file.");
-            out.println("Write " + amount + " products speed: " + durationInSeconds + "s");
+                long endTime = currentTimeMillis(); // Record end time
+                long duration = endTime - startTime; // Calculate duration
+                double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
+
+                out.println("#".repeat(50));
+                out.println("# Products have been randomly generated and written to file.");
+                out.println("Write " + amount + "\nproducts speed: " + durationInSeconds + "s");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             out.println("Operation cancelled.");
         }
@@ -525,6 +539,9 @@ public class MethodForFile {
     public static void writeProductsToFile(List<Product> productList) {
         try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
             for (Product product : productList) {
+                productList = new ArrayList<>();
+                productList.add(product);
+                writer.write(product.getCode() + ",");
                 writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
             }
             writer.flush(); // Flush remaining data
@@ -533,22 +550,77 @@ public class MethodForFile {
         }
     }
 
-    public static void readProductsFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("product.txt"))) {
-            int recorCount = 0;
-            long startTime = currentTimeMillis(); // Record start time
-            while ((reader.readLine()) != null) {
-                recorCount++;
-            }
-            long endTime = currentTimeMillis(); // Record end time
-            long duration = endTime - startTime; // Calculate duration
-            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
 
-            out.println("Read " + recorCount + "speed: " + durationInSeconds + "s");
-        } catch (IOException e) {
+    public static void showLoadingAnimation() {
+        String[] animationChars = { ".", "..", "...", "...." };
+        String[] animationDots = { "|", "/", "-", "\\" };
+        int timesToRepeat = 0;
+        out.println("#".repeat(25));
+        // Print the loading animation
+        for (int i = 0; i < timesToRepeat; i++) {
+            out.print("\rData is Loading " + animationDots[i % animationDots.length] + animationChars[i % animationChars.length]);
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException e) {
+                out.println(e.getMessage());
+            }
+        }
+        out.println("\b");
+    }
+    public static List<Product> readProductsFromFile() {
+        long startTime = System.currentTimeMillis();
+        List<Product> productList = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(1); // Create a latch with count 1 to control loading animation
+        final Long[] totalRecordCount = {0L}; // To count the total records
+
+        // Start a thread for loading animation
+        Thread loadingThread = new Thread(() -> {
+            showLoadingAnimation();
+        });
+        loadingThread.start();
+
+        // Start another thread for reading products from file
+        Thread readingThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new FileReader("product.txt"))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 5) {
+                        Product product = new Product();
+                        product.setCode(parts[0]);
+                        product.setName(parts[1]);
+                        product.setPrice(Double.parseDouble(parts[2]));
+                        product.setQuantity(Integer.parseInt(parts[3]));
+                        product.setDate(LocalDate.parse(parts[4]));
+                        productList.add(product);
+
+                    }
+                    totalRecordCount[0]++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                latch.countDown(); // Release latch after reading is done
+            }
+        });
+        readingThread.start();
+
+        try {
+            // Wait for the reading thread to finish
+            readingThread.join();
+            // Wait for the loading animation thread to finish
+            loadingThread.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
 
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        double durationInSeconds = duration / 1000.0;
+        out.println("#".repeat(25));
+        out.println("Total Record: " + totalRecordCount[0] +"\nSpeed: " + durationInSeconds + "s");
+
+        return productList;
+    }
 
 }

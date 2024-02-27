@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static methods.MethodForFile.readProductsFromFile;
+import static util.Animation.loadData;
+
 public class MainTest {
     static String backupDirectory = "backup/";
     static MethodForFile method = new MethodForFile();
@@ -19,9 +22,8 @@ public class MainTest {
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
-        Animation animation = new Animation();
         util.display();
-        animation.loadData();
+        readProductsFromFile();
         boolean isTrue = true;
         do {
             JTable jtable = new JTable();
