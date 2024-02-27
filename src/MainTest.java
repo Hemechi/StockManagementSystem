@@ -1,8 +1,10 @@
 import methods.MethodForFile;
 import model.Product;
+import util.Animation;
 import util.UtilTextTable;
 import util.JTable;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,10 +19,9 @@ public class MainTest {
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
+        Animation animation = new Animation();
         util.display();
-        System.out.println("#".repeat(25));
-        System.out.println("Data is loading");
-        System.out.println("#".repeat(25));
+        animation.loadData();
         boolean isTrue = true;
         do {
             JTable jtable = new JTable();
@@ -35,7 +36,6 @@ public class MainTest {
                     productList = method.readProductsFromFile("product.txt");
                     method.viewAllProduct(productList);
 
-//                    method.listBackupFiles(backupDirectory);
                 }
                 case "m", "M" -> {
                     // random code
@@ -84,10 +84,6 @@ public class MainTest {
                 case "t", "T" -> {
                     // restore code
                     method.listBackupFiles(backupDirectory);
-                    System.out.print("Enter the number of the backup file to restore: ");
-                    int fileNumber = scanner.nextInt();
-                    scanner.nextLine(); // Consume the remaining newline character
-                    method.restoreData("product.txt", backupDirectory, fileNumber);
                 }
                 case "h", "H" -> {
                     System.out.println();
@@ -103,7 +99,6 @@ public class MainTest {
                 }
                 default -> {
                     // default code
-                    System.out.println("Invalid input");
                     System.out.println("Invalid input");
                 }
             }
