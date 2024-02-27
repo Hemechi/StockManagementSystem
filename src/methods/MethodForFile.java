@@ -23,13 +23,13 @@ public class MethodForFile {
         Product product = new Product();
 
         while (true) {
-            System.out.print("Enter product code: ");
+            out.print("Enter product code: ");
             String code = scanner.nextLine();
 
             // Check if the entered product code already exists in the list
             boolean isDuplicate = productList.stream().anyMatch(p -> p.getCode().equals(code));
             if (isDuplicate) {
-                System.out.println("Product code already exists in memory. Please enter a unique product code.");
+                out.println("Product code already exists in memory. Please enter a unique product code.");
                 continue; // Ask for input again
             }
 
@@ -38,7 +38,7 @@ public class MethodForFile {
             break; // Exit the loop if the code is unique
         }
 
-        System.out.print("Enter product name: ");
+        out.print("Enter product name: ");
         String name = scanner.nextLine();
         product.setName(name);
 
@@ -46,15 +46,15 @@ public class MethodForFile {
         boolean validPrice = false;
         while (!validPrice) {
             try {
-                System.out.print("Enter product price: ");
+                out.print("Enter product price: ");
                 price = Double.parseDouble(scanner.nextLine());
                 if (price <= 0.0) {
-                    System.out.println("Price must be a positive number.");
+                    out.println("Price must be a positive number.");
                 } else {
                     validPrice = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid price format. Please enter a valid number.");
+                out.println("Invalid price format. Please enter a valid number.");
             }
         }
         product.setPrice(price);
@@ -63,15 +63,15 @@ public class MethodForFile {
         boolean validQuantity = false;
         while (!validQuantity) {
             try {
-                System.out.print("Enter product quantity: ");
+                out.print("Enter product quantity: ");
                 quantity = Integer.parseInt(scanner.nextLine());
                 if (quantity <= 0) {
-                    System.out.println("Quantity must be a positive integer.");
+                    out.println("Quantity must be a positive integer.");
                 } else {
                     validQuantity = true;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid quantity format. Please enter a valid integer.");
+                out.println("Invalid quantity format. Please enter a valid integer.");
             }
         }
         product.setQuantity(quantity);
@@ -91,7 +91,7 @@ public class MethodForFile {
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
+            out.println("Error writing to file: " + e.getMessage());
         }
     }
     private void updateProductInFile(Product product) {
@@ -114,7 +114,7 @@ public class MethodForFile {
             // Write the updated content back to the file
             Files.write(Paths.get("product.txt"), fileContent);
         } catch (IOException e) {
-            System.out.println("Error updating product in file: " + e.getMessage());
+            out.println("Error updating product in file: " + e.getMessage());
         }
     }
 
@@ -138,12 +138,12 @@ public class MethodForFile {
                 out.print("Enter product price: ");
                 price = Double.parseDouble(scanner.nextLine());
                 if (price <= 0) {
-                    System.out.println("Price must be a positive number.");
+                    out.println("Price must be a positive number.");
                 } else {
                     return price;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid price format. Please enter a valid number.");
+                out.println("Invalid price format. Please enter a valid number.");
             }
         }
     }
@@ -155,12 +155,12 @@ public class MethodForFile {
                 out.print("Enter product quantity: ");
                 quantity = Integer.parseInt(scanner.nextLine());
                 if (quantity <= 0) {
-                    System.out.println("Quantity must be a positive integer.");
+                    out.println("Quantity must be a positive integer.");
                 } else {
                     return quantity;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid quantity format. Please enter a valid integer.");
+                out.println("Invalid quantity format. Please enter a valid integer.");
             }
         }
     }
@@ -197,7 +197,7 @@ public class MethodForFile {
                     try {
                         option = Integer.parseInt(scanner.nextLine());
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid option. Please enter a number.");
+                        out.println("Invalid option. Please enter a number.");
                         continue;
                     }
 
@@ -267,11 +267,11 @@ public class MethodForFile {
                     // Add new products at the beginning of the list
                     productList.add(0, product);
                 } else {
-                    System.out.println("Invalid data in file: " + line);
+                    out.println("Invalid data in file: " + line);
                 }
             }
         } catch (IOException | NumberFormatException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            out.println("Error reading file: " + e.getMessage());
         }
 
         return productList;
@@ -320,7 +320,7 @@ public class MethodForFile {
         out.println("~".repeat(87));
         out.print("(B)ack or Navigation page : ");
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(in);
         char option = scanner.next().charAt(0);
         switch (option) {
             case 'F', 'f':
@@ -417,9 +417,9 @@ public class MethodForFile {
                     outputStream.flush(); // Flush the buffer after writing all data
                 }
 
-                System.out.println("Backup created successfully.");
+                out.println("Backup created successfully.");
             } else {
-                System.out.println("Source file does not exist.");
+                out.println("Source file does not exist.");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -441,13 +441,13 @@ public class MethodForFile {
                 for (int i = 0; i < backupFiles.length; i++) {
                     table.addCell((i + 1) + ". " + backupFiles[i].getName());
                 }
-                System.out.println(table.render());
-                System.out.print("Enter the number of the backup file to restore: ");
+                out.println(table.render());
+                out.print("Enter the number of the backup file to restore: ");
                 int fileNumber = scanner.nextInt();
                 scanner.nextLine(); // Consume the remaining newline character
                 restoreData("product.txt", backupDirectory, fileNumber);
             } else {
-                System.out.println("No backup files found.");
+                out.println("No backup files found.");
             }
         }catch (Exception e){
             out.println(e.getMessage());
@@ -465,9 +465,9 @@ public class MethodForFile {
                 String restoredFilePath = sourceFilePath.replaceFirst("[.][^.]+$", "_restored" + backupFileName.substring(backupFileName.lastIndexOf(".")));
                 String fullPath= directry+restoredFilePath;
                 Files.copy(selectedFile.toPath(), Path.of(fullPath), StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("Data restored successfully to: " + restoredFilePath);
+                out.println("Data restored successfully to: " + restoredFilePath);
             } else {
-                System.out.println("Invalid file number.");
+                out.println("Invalid file number.");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -475,13 +475,29 @@ public class MethodForFile {
     }
 
     public static void randomProduct(List<Product> productList) {
+
+        out.print("Choose an option:\n1. Write to file\n2. Read from file\nEnter your choice: ");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                randomWriteProduct(productList);
+                break;
+            case 2:
+                readProductsFromFile();
+                break;
+            default:
+                out.println("Invalid choice. Operation cancelled.");
+        }
+    }
+
+    public static void randomWriteProduct(List<Product> productList) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
         char option = scanner.next().charAt(0); // Read the option as a string and get the first character
 
         if (option == 'Y' || option == 'y') {
-            long startTime = System.currentTimeMillis(); // Record start time
+            long startTime = currentTimeMillis(); // Record start time
             // Generate products
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
@@ -499,7 +515,7 @@ public class MethodForFile {
             });
             writingThread.start();
 
-            long endTime = System.currentTimeMillis(); // Record end time
+            long endTime = currentTimeMillis(); // Record end time
             long duration = endTime - startTime; // Calculate duration
             double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
 
@@ -521,5 +537,23 @@ public class MethodForFile {
             e.printStackTrace();
         }
     }
+
+    public static void readProductsFromFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("product.txt"))) {
+            int recorCount = 0;
+            long startTime = currentTimeMillis(); // Record start time
+            while ((reader.readLine()) != null) {
+                recorCount++;
+            }
+            long endTime = currentTimeMillis(); // Record end time
+            long duration = endTime - startTime; // Calculate duration
+            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
+
+            out.println("Read " + recorCount + "speed: " + durationInSeconds + "s");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
