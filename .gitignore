@@ -24,6 +24,6 @@ bin/
 
 ### VS Code ###
 .vscode/
-
+product.txt
 ### Mac OS ###
 .DS_Store
