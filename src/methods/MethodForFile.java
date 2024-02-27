@@ -4,12 +4,14 @@ import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
+import service.ServiceImpl;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -17,8 +19,9 @@ import java.util.*;
 
 import static java.lang.System.*;
 
-public class MethodForFile {
+public class MethodForFile implements ServiceImpl {
     static final Scanner scanner = new Scanner(in);
+    @Override
     public void createProduct(List<Product> productList) {
         Product product = new Product();
 
@@ -165,7 +168,7 @@ public class MethodForFile {
         }
     }
 
-
+    @Override
     public void editProduct(List<Product> productList) {
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
@@ -248,7 +251,7 @@ public class MethodForFile {
             out.println("Product not found in the list.");
         }
     }
-
+    @Override
     public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
 
@@ -276,7 +279,7 @@ public class MethodForFile {
 
         return productList;
     }
-
+    @Override
     public void viewAllProduct(List<Product> productList) {
         int rowsPerPage = 8;
         int totalPages = (int) Math.ceil((double) productList.size() / rowsPerPage);
@@ -338,6 +341,7 @@ public class MethodForFile {
         }
     }
 
+    @Override
     public void readOnlyProduct(List<Product> productList){
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
@@ -353,6 +357,7 @@ public class MethodForFile {
             }
         }
     }
+    @Override
     public void deleteProduct(List<Product> productList) {
         out.print("Enter product code: ");
         String code = scanner.nextLine();
@@ -379,6 +384,7 @@ public class MethodForFile {
 
         out.println("Record deleted successfully.");
     }
+    @Override
     public void searchProduct(List<Product> productList){
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product name: ");
@@ -390,7 +396,24 @@ public class MethodForFile {
         }
 
     }
-    public void backUpData(String sourceFilePath, String backupFilePath) {
+    @Override
+    public void backUpData() {
+       String backupDirectory = "backup/";
+        // back up code
+        String sourceFilePaths = "product.txt";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String timestamp = dateFormat.format(new Date());
+        String backupFileName = "backupfile_" + timestamp + ".csv";
+        String backupFilePath = backupDirectory + backupFileName;
+
+        System.out.print("Are you sure to Backup [Y/N]: ");
+        String ch = scanner.nextLine();
+
+        if (ch.equalsIgnoreCase("y")) {
+           backUpImpl(sourceFilePaths, backupFilePath);
+        }
+    }
+    public void backUpImpl(String sourceFilePath, String backupFilePath){
         try {
             Path sourcePath = Path.of(sourceFilePath);
             Path backupPath = Path.of(backupFilePath);
@@ -424,7 +447,7 @@ public class MethodForFile {
         File backupDir = new File(backupDirectory);
         return backupDir.listFiles();
     }
-
+    @Override
     public void listBackupFiles(String backupDirectory) {
         try{
             File backupDir = new File(backupDirectory);
@@ -468,8 +491,8 @@ public class MethodForFile {
             e.printStackTrace();
         }
     }
-
-    public static void randomProduct(List<Product> productList) {
+    @Override
+    public void randomProduct(List<Product> productList) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");

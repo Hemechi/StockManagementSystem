@@ -1,5 +1,6 @@
 import methods.MethodForFile;
 import model.Product;
+import service.ServiceImpl;
 import util.Animation;
 import util.UtilTextTable;
 import util.JTable;
@@ -13,7 +14,8 @@ import java.util.Scanner;
 
 public class MainTest {
     static String backupDirectory = "backup/";
-    static MethodForFile method = new MethodForFile();
+//    static MethodForFile method = new MethodForFile();
+    static  ServiceImpl service = new MethodForFile();
     static List<Product> productList = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -33,31 +35,31 @@ public class MainTest {
             switch (option) {
                 case "l", "L" -> {
                     // display code
-                    productList = method.readProductsFromFile("product.txt");
-                    method.viewAllProduct(productList);
+                    productList = service.readProductsFromFile("product.txt");
+                    service.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
-                    method.randomProduct(productList);
+                    service.randomProduct(productList);
                 }
                 case "w", "W" -> {
                     // write code
-                    method.createProduct(productList);
+                    service.createProduct(productList);
                 }
                 case "r", "R" -> {
                     // read code
-                    method.readOnlyProduct(productList);
+                    service.readOnlyProduct(productList);
                 }
                 case "e", "E" -> {
                     // edit code
-                    method.editProduct(productList);
+                   service.editProduct(productList);
                 }
                 case "d", "D" -> {
                     // delete code
-                    method.deleteProduct(productList);
+                   service.deleteProduct(productList);
                 }
                 case "s", "S" -> {
                     // search code
-                    method.searchProduct(productList);
+                    service.searchProduct(productList);
                 }
                 case "o", "O" -> {
                     // set row code
@@ -66,23 +68,11 @@ public class MainTest {
                     // commit code
                 }
                 case "k", "K" -> {
-                    // back up code
-                    String sourceFilePaths = "product.txt";
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    String timestamp = dateFormat.format(new Date());
-                    String backupFileName = "backupfile_" + timestamp + ".csv";
-                    String backupFilePath = backupDirectory + backupFileName;
-
-                    System.out.print("Are you sure to Backup [Y/N]: ");
-                    String ch = scanner.nextLine();
-
-                    if (ch.equalsIgnoreCase("y")) {
-                        method.backUpData(sourceFilePaths, backupFilePath);
-                    }
+                    service.backUpData();
                 }
                 case "t", "T" -> {
                     // restore code
-                    method.listBackupFiles(backupDirectory);
+                   service.listBackupFiles(backupDirectory);
                 }
                 case "h", "H" -> {
                     System.out.println();
