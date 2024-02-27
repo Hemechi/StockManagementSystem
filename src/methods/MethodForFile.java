@@ -332,21 +332,19 @@ public class MethodForFile {
     }
 
     public static void writeProductsToFile(List<Product> productList) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
-            StringBuilder sb = new StringBuilder();
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
+            int batchSize = 1000; // Adjust batch size as needed
+            int count = 0;
             for (Product product : productList) {
-                String productDetails = String.join(",",
-                        product.getCode(),
-                        product.getName(),
-                        String.valueOf(product.getPrice()),
-                        String.valueOf(product.getQuantity()),
-                        product.getDate().toString());
-                sb.append(productDetails).append(System.lineSeparator());
+                writer.println(STR."\{product.getCode()},\{product.getName()},\{product.getPrice()},\{product.getQuantity()},\{product.getDate()}");
+                count++;
+                if (count % batchSize == 0) {
+                    writer.flush(); // Flush the buffer periodically
+                }
             }
-            writer.write(sb.toString());
-            writer.flush();
+            writer.flush(); // Flush remaining data
         } catch (IOException e) {
-            out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
