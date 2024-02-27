@@ -38,13 +38,6 @@ public class MainTest {
                 } case "m","M"-> {
                     //random code
                     method.randomProduct(productList);
-
-<<<<<<< HEAD
-=======
-                }
-                case "m", "M" -> {
-                    // random code
->>>>>>> d6cce54e51cdf0c0c77b1a9d0acb741baea238a1
                 }
                 case "w", "W" -> {
                     // write code
