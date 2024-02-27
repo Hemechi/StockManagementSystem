@@ -278,12 +278,6 @@ public class MethodForFile {
     }
 
     public void viewAllProduct(List<Product> productList) {
-        List<Product> sortedList = new ArrayList<>(productList);
-        Collections.sort(sortedList, new Comparator<Product>() {
-            public int compare(Product p1, Product p2) {
-                return p1.getCode().compareTo(p2.getCode());
-            }
-        });
         int rowsPerPage = 8;
         int totalPages = (int) Math.ceil((double) productList.size() / rowsPerPage);
         int currentPage = 1;
@@ -299,9 +293,9 @@ public class MethodForFile {
             table.addCell("Product Quantity");
             table.addCell("Product Date");
 
-            for (int i = startIndex; i < endIndex && i < sortedList.size(); i++) {
-                Product product = sortedList.get(i);
-                table.addCell("Code: " + product.getCode());
+            for (int i = startIndex; i < endIndex; i++) {
+                Product product = productList.get(i);
+                table.addCell("Code : " + product.getCode());
                 table.addCell("Name : " + product.getName());
                 table.addCell("Price : " + product.getPrice());
                 table.addCell("Quantity : " + product.getQuantity());
@@ -315,6 +309,7 @@ public class MethodForFile {
             currentPage = pageNavigation(currentPage, totalPages);
         } while (currentPage != -1);
     }
+
     private int pageNavigation(int currentPage, int totalPages) {
         out.printf("Page Navigation   %-25s (F)irst   (P)revious (G)oto (N)ext  (L)ast%n", "", "", "", "", "");
         out.println("~".repeat(87));
