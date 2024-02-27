@@ -8,93 +8,280 @@ import org.nocrala.tools.texttablefmt.Table;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
 import static java.lang.System.*;
 
 public class MethodForFile {
     static final Scanner scanner = new Scanner(in);
-    public void createProduct(List<Product> productList){
+    public void createProduct(List<Product> productList) {
         Product product = new Product();
-        out.print("Enter product code: ");
-        product.setCode(scanner.nextLine());
-        out.print("Enter product name: ");
-        product.setName(scanner.nextLine());
-        out.print("Enter product price:");
-        product.setPrice(Double.parseDouble(scanner.nextLine()));
-        out.print("Enter product quantity:");
-        product.setQuantity(Integer.parseInt(scanner.nextLine()));
-        product.setDate(LocalDate.now());
-        productList.add(product);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt",true))){
-            writer.write(product.getCode()+",");
-            writer.write(product.getName()+",");
-            writer.write(product.getPrice()+",");
-            writer.write(product.getQuantity()+",");
-            writer.write(product.getDate()+",");
-            writer.newLine();
-        }catch (IOException e){
-            out.println(e.getMessage());
+        while (true) {
+            System.out.print("Enter product code: ");
+            String code = scanner.nextLine();
+
+            // Check if the entered product code already exists in the list
+            boolean isDuplicate = productList.stream().anyMatch(p -> p.getCode().equals(code));
+            if (isDuplicate) {
+                System.out.println("Product code already exists in memory. Please enter a unique product code.");
+                continue; // Ask for input again
+            }
+
+            // Proceed with entering other product details
+            product.setCode(code);
+            break; // Exit the loop if the code is unique
         }
 
+        System.out.print("Enter product name: ");
+        String name = scanner.nextLine();
+        product.setName(name);
+
+        double price = 0.0;
+        boolean validPrice = false;
+        while (!validPrice) {
+            try {
+                System.out.print("Enter product price: ");
+                price = Double.parseDouble(scanner.nextLine());
+                if (price <= 0.0) {
+                    System.out.println("Price must be a positive number.");
+                } else {
+                    validPrice = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid price format. Please enter a valid number.");
+            }
+        }
+        product.setPrice(price);
+
+        int quantity = 0;
+        boolean validQuantity = false;
+        while (!validQuantity) {
+            try {
+                System.out.print("Enter product quantity: ");
+                quantity = Integer.parseInt(scanner.nextLine());
+                if (quantity <= 0) {
+                    System.out.println("Quantity must be a positive integer.");
+                } else {
+                    validQuantity = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid quantity format. Please enter a valid integer.");
+            }
+        }
+        product.setQuantity(quantity);
+
+        product.setDate(LocalDate.now());
+
+        // Add the new product to the beginning of the list
+        productList.add(0, product);
+
+        // Write the new product to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
+            writer.write(product.getCode() + ",");
+            writer.write(product.getName() + ",");
+            writer.write(product.getPrice() + ",");
+            writer.write(product.getQuantity() + ",");
+            writer.write(product.getDate() + ",");
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
     }
-    public void editProduct(List<Product> productList){
-        Table table = new Table(1,BorderStyle.UNICODE_DOUBLE_BOX_WIDE,ShownBorders.SURROUND);
-        Product updatedProduct = new Product();
+    private void updateProductInFile(Product product) {
+        List<String> fileContent;
+        try {
+            // Read all lines from the file
+            fileContent = Files.readAllLines(Paths.get("product.txt"));
+
+            // Iterate through the lines and find the line to update
+            for (int i = 0; i < fileContent.size(); i++) {
+                String line = fileContent.get(i);
+                String[] parts = line.split(",");
+                if (parts[0].equals(product.getCode())) {
+                    // Update the line with the new product details
+                    fileContent.set(i, product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
+                    break;
+                }
+            }
+
+            // Write the updated content back to the file
+            Files.write(Paths.get("product.txt"), fileContent);
+        } catch (IOException e) {
+            System.out.println("Error updating product in file: " + e.getMessage());
+        }
+    }
+
+    private Product editAllFields(Product product) {
+        product.setName(editName());
+        product.setPrice(editPrice());
+        product.setQuantity(editQuantity());
+        product.setDate(LocalDate.now());
+        return product;
+    }
+
+    private String editName() {
+        out.print("Enter product name: ");
+        return scanner.nextLine();
+    }
+
+    private double editPrice() {
+        double price;
+        while (true) {
+            try {
+                out.print("Enter product price: ");
+                price = Double.parseDouble(scanner.nextLine());
+                if (price <= 0) {
+                    System.out.println("Price must be a positive number.");
+                } else {
+                    return price;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid price format. Please enter a valid number.");
+            }
+        }
+    }
+
+    private int editQuantity() {
+        int quantity;
+        while (true) {
+            try {
+                out.print("Enter product quantity: ");
+                quantity = Integer.parseInt(scanner.nextLine());
+                if (quantity <= 0) {
+                    System.out.println("Quantity must be a positive integer.");
+                } else {
+                    return quantity;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid quantity format. Please enter a valid integer.");
+            }
+        }
+    }
+
+
+    public void editProduct(List<Product> productList) {
+        Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
         String code = scanner.nextLine();
-        for(Product product : productList){
-            if (product.getCode().equals(code)){
+        boolean productFound = false;
 
-                    table.addCell("Code : "+product.getCode());
-                    table.addCell("Name : " +product.getName());
-                    table.addCell("Price : "+product.getPrice());
-                    table.addCell("Quantity : "+product.getQuantity());
-                    table.addCell("Date : "+product.getDate());
+        for (Product product : productList) {
+            if (product.getCode().equals(code)) {
+                productFound = true;
+                table.addCell("Code : " + product.getCode());
+                table.addCell("Name : " + product.getName());
+                table.addCell("Price : " + product.getPrice());
+                table.addCell("Quantity : " + product.getQuantity());
+                table.addCell("Date : " + product.getDate());
+                out.println(table.render());
+
+                while (true) {
+                    Table table1 = new Table(7, BorderStyle.UNICODE_DOUBLE_BOX_WIDE,ShownBorders.SURROUND);
+
+                    out.println("> Select an option :");
+                    table1.addCell("  1). Edit All    |");
+                    table1.addCell("  2). Edit Name    |");
+                    table1.addCell("  3). Edit Price    |");
+                    table1.addCell("  4). Edit Quantity    |");
+                    table1.addCell("  5). Exit      ");
+                    out.println(table1.render());
+                    out.print("Enter option: ");
+                    int option = -1;
+                    try {
+                        option = Integer.parseInt(scanner.nextLine());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid option. Please enter a number.");
+                        continue;
+                    }
+
+                    switch (option) {
+                        case 1:
+                            // Edit all fields
+                            editAllFields(product);
+                            break;
+                        case 2:
+                            // Edit name
+                            product.setName(editName());
+                            break;
+                        case 3:
+                            // Edit price
+                            product.setPrice(editPrice());
+                            break;
+                        case 4:
+                            // Edit quantity
+                            product.setQuantity(editQuantity());
+                            break;
+                        case 5:
+                            // Exit
+                            break;
+                        default:
+                            out.println("Invalid option. Please try again.");
+                            continue;
+                    }
+                    if (option == 5) {
+                        break;
+                    }
+                    // Update the product in the file
+                    updateProductInFile(product);
+
+                    // Re-render the table after update
+                    table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
+                    table.addCell("Code : " + product.getCode());
+                    table.addCell("Name : " + product.getName());
+                    table.addCell("Price : " + product.getPrice());
+                    table.addCell("Quantity : " + product.getQuantity());
+                    table.addCell("Date : " + product.getDate());
                     out.println(table.render());
-
-                out.print("Enter product name: ");
-                product.setName(scanner.nextLine());
-                out.print("Enter product price:");
-                product.setPrice(scanner.nextDouble());
-                out.print("Enter product quantity:");
-                product.setQuantity(scanner.nextInt());
-                product.setDate(LocalDate.now());
-                productList.set(productList.indexOf(product), updatedProduct);
+                }
+                break; // Exit the loop once the product is found and updated
             }
         }
 
+        if (!productFound) {
+            out.println("Product not found in the list.");
+        }
     }
+
     public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 5) {
-                    Product product = new Product();
-                    product.setCode(parts[0].trim());
-                    product.setName(parts[1].trim());
-                    product.setPrice(Double.parseDouble(parts[2].trim()));
-                    product.setQuantity(Integer.parseInt(parts[3].trim()));
-                    product.setDate(LocalDate.parse(parts[4].trim())); // Assuming date is stored in ISO_LOCAL_DATE format
-                    productList.add(product);
+                    String code = parts[0].trim();
+                    String name = parts[1].trim();
+                    double price = Double.parseDouble(parts[2].trim());
+                    int quantity = Integer.parseInt(parts[3].trim());
+                    LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
+
+                    Product product = new Product(code, name, price, quantity, date);
+                    // Add new products at the beginning of the list
+                    productList.add(0, product);
                 } else {
-                    out.println("Invalid data in file: " + line);
+                    System.out.println("Invalid data in file: " + line);
                 }
             }
         } catch (IOException | NumberFormatException e) {
-            out.println("Error reading file: " + e.getMessage());
+            System.out.println("Error reading file: " + e.getMessage());
         }
 
         return productList;
     }
+
     public void viewAllProduct(List<Product> productList) {
+        List<Product> sortedList = new ArrayList<>(productList);
+        Collections.sort(sortedList, new Comparator<Product>() {
+            public int compare(Product p1, Product p2) {
+                return p1.getCode().compareTo(p2.getCode());
+            }
+        });
         int rowsPerPage = 8;
         int totalPages = (int) Math.ceil((double) productList.size() / rowsPerPage);
         int currentPage = 1;
@@ -110,9 +297,9 @@ public class MethodForFile {
             table.addCell("Product Quantity");
             table.addCell("Product Date");
 
-            for (int i = startIndex; i < endIndex; i++) {
-                Product product = productList.get(i);
-                table.addCell("Code : " + product.getCode());
+            for (int i = startIndex; i < endIndex && i < sortedList.size(); i++) {
+                Product product = sortedList.get(i);
+                table.addCell("Code: " + product.getCode());
                 table.addCell("Name : " + product.getName());
                 table.addCell("Price : " + product.getPrice());
                 table.addCell("Quantity : " + product.getQuantity());
