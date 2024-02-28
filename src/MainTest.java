@@ -15,8 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import static methods.MethodForFile.readProductsFromFile;
-import static util.Animation.loadData;
 
 public class MainTest {
     static String backupDirectory = "backup/";
