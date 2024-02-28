@@ -8,10 +8,7 @@ import util.AnimationImpl;
 import view.Menu;
 import view.MenuImpl;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,7 +21,7 @@ public class MainTest {
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
 
