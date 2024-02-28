@@ -1,33 +1,32 @@
 import methods.MethodForFile;
+import methods.MethodForFileImpl;
 import model.Product;
+import service.Service;
 import service.ServiceImpl;
 import util.Animation;
-import util.UtilTextTable;
-import util.JTable;
+import util.AnimationImpl;
+import view.Menu;
+import view.MenuImpl;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 public class MainTest {
     static String backupDirectory = "backup/";
-//    static MethodForFile method = new MethodForFile();
-    static  ServiceImpl service = new MethodForFile();
+    static Service service = new ServiceImpl();
+    static MethodForFile method = new MethodForFileImpl();
+    static Animation animation = new AnimationImpl();
+    static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
-        UtilTextTable util = new UtilTextTable();
-        Animation animation = new Animation();
-        util.display();
-        animation.loadData();
+        menuDisplay.displayStyle();
+        animation.loadData("product.txt");
         boolean isTrue = true;
         do {
-            JTable jtable = new JTable();
-            jtable.displayTable();
+             menuDisplay.displayMenu();
             // add Option Input
             Scanner scanner = new Scanner(System.in);
             System.out.print("> Select menu no -> ");
@@ -68,22 +67,20 @@ public class MainTest {
                     // commit code
                 }
                 case "k", "K" -> {
-                    service.backUpData();
+                    method.backUpData();
                 }
                 case "t", "T" -> {
                     // restore code
-                   service.listBackupFiles(backupDirectory);
+                   method.listBackupFiles(backupDirectory);
                 }
                 case "h", "H" -> {
                     System.out.println();
                     System.out.println("# Help Instruction");
-                    JTable tableHelp = new JTable();
-                    tableHelp.displayHelpTable();
+                    menuDisplay.displayHelpTable();
                 }
                 case "x", "X" -> {
                     System.out.println();
-                    JTable tableExit = new JTable();
-                    tableExit.displayExitTable();
+                    menuDisplay.displayExitTable();
                     System.exit(0);
                 }
                 default -> {
