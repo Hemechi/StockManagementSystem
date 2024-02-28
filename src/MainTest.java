@@ -1,8 +1,12 @@
 import methods.MethodForFile;
+import methods.MethodForFileImpl;
 import model.Product;
+import service.Service;
+import service.ServiceImpl;
 import util.Animation;
-import util.UtilTextTable;
-import util.JTable;
+import util.AnimationImpl;
+import view.Menu;
+import view.MenuImpl;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -16,18 +20,19 @@ import static util.Animation.loadData;
 
 public class MainTest {
     static String backupDirectory = "backup/";
-    static MethodForFile method = new MethodForFile();
+    static Service service = new ServiceImpl();
+    static MethodForFile method = new MethodForFileImpl();
+    static Animation animation = new AnimationImpl();
+    static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
-        UtilTextTable util = new UtilTextTable();
-        util.display();
-        readProductsFromFile();
+        menuDisplay.displayStyle();
+        animation.loadData("product.txt");
         boolean isTrue = true;
         do {
-            JTable jtable = new JTable();
-            jtable.displayTable();
+             menuDisplay.displayMenu();
             // add Option Input
             Scanner scanner = new Scanner(System.in);
             System.out.print("> Select menu no -> ");
@@ -35,31 +40,31 @@ public class MainTest {
             switch (option) {
                 case "l", "L" -> {
                     // display code
-                    productList = method.readProductsFromFile("product.txt");
-                    method.viewAllProduct(productList);
+                    productList = service.readProductsFromFile("product.txt");
+                    service.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
-                    method.randomProduct(productList);
+                    service.randomProduct(productList);
                 }
                 case "w", "W" -> {
                     // write code
-                    method.createProduct(productList);
+                    service.createProduct(productList);
                 }
                 case "r", "R" -> {
                     // read code
-                    method.readOnlyProduct(productList);
+                    service.readOnlyProduct(productList);
                 }
                 case "e", "E" -> {
                     // edit code
-                    method.editProduct(productList);
+                   service.editProduct(productList);
                 }
                 case "d", "D" -> {
                     // delete code
-                    method.deleteProduct(productList);
+                   service.deleteProduct(productList);
                 }
                 case "s", "S" -> {
                     // search code
-                    method.searchProduct(productList);
+                    service.searchProduct(productList);
                 }
                 case "o", "O" -> {
                     // set row code
@@ -68,34 +73,20 @@ public class MainTest {
                     // commit code
                 }
                 case "k", "K" -> {
-                    // back up code
-                    String sourceFilePaths = "product.txt";
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    String timestamp = dateFormat.format(new Date());
-                    String backupFileName = "backupfile_" + timestamp + ".csv";
-                    String backupFilePath = backupDirectory + backupFileName;
-
-                    System.out.print("Are you sure to Backup [Y/N]: ");
-                    String ch = scanner.nextLine();
-
-                    if (ch.equalsIgnoreCase("y")) {
-                        method.backUpData(sourceFilePaths, backupFilePath);
-                    }
+                    method.backUpData();
                 }
                 case "t", "T" -> {
                     // restore code
-                    method.listBackupFiles(backupDirectory);
+                   method.listBackupFiles(backupDirectory);
                 }
                 case "h", "H" -> {
                     System.out.println();
                     System.out.println("# Help Instruction");
-                    JTable tableHelp = new JTable();
-                    tableHelp.displayHelpTable();
+                    menuDisplay.displayHelpTable();
                 }
                 case "x", "X" -> {
                     System.out.println();
-                    JTable tableExit = new JTable();
-                    tableExit.displayExitTable();
+                    menuDisplay.displayExitTable();
                     System.exit(0);
                 }
                 default -> {
