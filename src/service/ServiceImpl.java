@@ -234,7 +234,6 @@ public class ServiceImpl implements Service{
     @Override
     public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
-
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -247,14 +246,17 @@ public class ServiceImpl implements Service{
                     LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
 
                     Product product = new Product(code, name, price, quantity, date);
-                    // Add new products at the beginning of the list
-                    productList.add(0, product);
+                    productList.add(product);
                 } else {
                     System.out.println("Invalid data in file: " + line);
                 }
             }
-        } catch (IOException | NumberFormatException e) {
+        } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing data: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
         }
 
         return productList;

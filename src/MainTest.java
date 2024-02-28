@@ -27,6 +27,7 @@ public class MainTest {
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
+
         animation.loadData("product.txt");
         boolean isTrue = true;
         do {
