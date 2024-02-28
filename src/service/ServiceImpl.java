@@ -17,11 +17,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static java.lang.System.in;
 import static java.lang.System.out;
 
-public class ServiceImpl implements Service{
+public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
     static MethodForFile method = new MethodForFileImpl();
     static final Scanner scanner = new Scanner(in);
@@ -234,15 +235,16 @@ public class ServiceImpl implements Service{
     @Override
     public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
+        long startTime = System.currentTimeMillis(); // Record start time
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(",", 5); // Limit split to 5 parts
                 if (parts.length == 5) {
-                    String code = parts[0].trim();
-                    String name = parts[1].trim();
-                    double price = Double.parseDouble(parts[2].trim());
-                    int quantity = Integer.parseInt(parts[3].trim());
+                    String code = parts[0];
+                    String name = parts[1];
+                    double price = Double.parseDouble(parts[2]);
+                    int quantity = Integer.parseInt(parts[3]);
                     LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
 
                     Product product = new Product(code, name, price, quantity, date);
@@ -253,12 +255,15 @@ public class ServiceImpl implements Service{
             }
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.out.println("Error parsing data: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
-
+        long endTime = System.currentTimeMillis(); // Record end time
+        long totalTimeMillis = endTime - startTime; // Calculate total time taken in milliseconds
+        double totalTimeSeconds = totalTimeMillis / 1000.0; // Convert milliseconds to seconds
+        System.out.println("Total time taken to read products: " + totalTimeSeconds + " seconds");
         return productList;
     }
     @Override
@@ -355,7 +360,6 @@ public class ServiceImpl implements Service{
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
         char option = scanner.next().charAt(0); // Read the option as a string and get the first character
-
         if (option == 'Y' || option == 'y') {
             long startTime = System.currentTimeMillis(); // Record start time
             // Generate products
@@ -386,4 +390,5 @@ public class ServiceImpl implements Service{
             out.println("Operation cancelled.");
         }
     }
+
 }

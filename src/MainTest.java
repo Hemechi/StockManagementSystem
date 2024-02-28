@@ -28,7 +28,7 @@ public class MainTest {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
 
-        animation.loadData("product.txt");
+        productList = service.readProductsFromFile("product.txt");
         boolean isTrue = true;
         do {
              menuDisplay.displayMenu();
@@ -39,7 +39,6 @@ public class MainTest {
             switch (option) {
                 case "l", "L" -> {
                     // display code
-                    productList = service.readProductsFromFile("product.txt");
                     service.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
