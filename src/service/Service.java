@@ -11,8 +11,7 @@ public interface Service {
     void editProduct(List<Product> productList);
     void deleteProduct(List<Product> productList);
     void searchProduct(List<Product> productList);
-    List<Product> readProductsFromFile(String fileName);
+    void readProductsFromFile(List<Product> productList);
     void writeProductsToFile(List<Product> productList);
     void viewAllProduct(List<Product> productList);
-    void loadingAnimation();
 }

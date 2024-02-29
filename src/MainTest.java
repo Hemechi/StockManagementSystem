@@ -24,7 +24,7 @@ public class MainTest {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
-        animation.loadData("product.txt");
+        service.readProductsFromFile(productList);
         boolean isTrue = true;
         do {
              menuDisplay.displayMenu();
@@ -38,6 +38,7 @@ public class MainTest {
                     service.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code
+
                     service.randomProduct(productList);
                 }
                 case "w", "W" -> {

@@ -6,6 +6,8 @@ import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
+import util.Animation;
+import util.AnimationImpl;
 import util.Pagination;
 import util.PaginationImpl;
 
@@ -25,6 +27,7 @@ import static java.lang.System.out;
 public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
     static MethodForFile method = new MethodForFileImpl();
+    static Animation animation = new AnimationImpl();
     static final Scanner scanner = new Scanner(in);
     @Override
     public void createProduct(List<Product> productList) {
@@ -233,12 +236,18 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public List<Product> readProductsFromFile(String fileName) {
-        List<Product> productList = new ArrayList<>();
-        long startTime = System.currentTimeMillis(); // Record start time
+    public void readProductsFromFile(List<Product> productList) {
+        long startTime = System.currentTimeMillis();
 
+        // Show loading animation
+        Thread animationThread = new Thread(() -> {
+            animation.loadData();
+        });
+        animationThread.start();
+
+        // Start reading file
         Thread fileReadingThread = new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader("product.txt"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",", 5); // Limit split to 5 parts
@@ -267,33 +276,36 @@ public class ServiceImpl implements Service {
         });
         fileReadingThread.start();
 
+        // Wait for file reading thread to finish
         try {
-            fileReadingThread.join(); // Wait for the file reading thread to finish
-//            animationThread.join(); // Wait for the animation thread to finish
+            fileReadingThread.join();
         } catch (InterruptedException e) {
             System.out.println("Thread interrupted: " + e.getMessage());
             Thread.currentThread().interrupt(); // Restore interrupted status
         }
 
-        long endTime = System.currentTimeMillis(); // Record end time
-        double totalTimeSeconds = (endTime - startTime) / 1000.0; // Calculate total time taken in seconds
-        System.out.println("Total time taken to read products: " + totalTimeSeconds + " seconds");
-
-        // Perform a read operation to ensure data is flushed
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            while (reader.readLine() != null) { /* Read the file to the end */ }
-        } catch (IOException e) {
-            System.out.println("Error closing file: " + e.getMessage());
+        // Wait for animation thread to finish
+        try {
+            animationThread.join();
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted: " + e.getMessage());
+            Thread.currentThread().interrupt(); // Restore interrupted status
         }
 
-        return productList;
+        // Record end time
+        long endTime = System.currentTimeMillis();
+        double totalTimeSeconds = (endTime - startTime) / 1000.0;
+        System.out.println("Completed: " + totalTimeSeconds + " seconds");
     }
+
+
     @Override
     public void viewAllProduct(List<Product> productList) {
         int rowsPerPage = 8;
-        int totalPages = (int) Math.ceil((double) productList.size() / rowsPerPage);
+        int totalPages = (int) Math.ceil((double) productList.size() / (double) rowsPerPage);
         int currentPage = 1;
         int totalRecords = productList.size();
+
         do {
             int startIndex = (currentPage - 1) * rowsPerPage;
             int endIndex = Math.min(startIndex + rowsPerPage, productList.size());
@@ -314,9 +326,9 @@ public class ServiceImpl implements Service {
                 table.addCell("Date : " + product.getDate());
             }
 
-            out.println(table.render());
-            out.println("~".repeat(87));
-            out.printf("Page: %d of %d   %-48s Total records: %d%n", currentPage, totalPages, "", totalRecords);
+            System.out.println(table.render());
+            System.out.println("~".repeat(87));
+            System.out.printf("Page: %d of %d   %-48s Total records: %d%n", currentPage, totalPages, "", totalRecords);
 
             currentPage = pagination.pageNavigation(currentPage, totalPages);
         } while (currentPage != -1);
@@ -381,11 +393,10 @@ public class ServiceImpl implements Service {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
-        char option = scanner.next().charAt(0); // Read the option as a string and get the first character
-
+        char option = scanner.next().charAt(0);
         if (option == 'Y' || option == 'y') {
-            long startTime = System.currentTimeMillis(); // Record start time
-            // Generate products
+            long startTime = System.currentTimeMillis();
+            animation.loadData();
             Product[] products = new Product[amount];
             for (int i = 0; i < amount; i++) {
                 products[i] = new Product();
@@ -398,31 +409,26 @@ public class ServiceImpl implements Service {
                     productList.add(products[i]);
                 }
             }
-            // Create a writing thread
             Thread writingThread = new Thread(() -> writeProductsToFile(productList));
             writingThread.start();
 
-            // Wait for both animation and writing threads to finish
             try {
-//                animationThread.join();
                 writingThread.join();
             } catch (InterruptedException e) {
                 out.println("Thread interrupted: " + e.getMessage());
-                Thread.currentThread().interrupt(); // Restore interrupted status
+                Thread.currentThread().interrupt();
             }
-
-            long endTime = System.currentTimeMillis(); // Record end time
-            long duration = endTime - startTime; // Calculate duration
-            double durationInSeconds = duration / 1000.0; // Convert milliseconds to seconds
-
-            out.println("############################################");
-            out.println("# Products have been randomly generated and written to file.");
-            out.println("Write " + amount + " products speed: " + durationInSeconds + "s");
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            double durationInSeconds = duration / 1000.0;
+            out.println("#Random Completed.");
+            out.println("#".repeat(25));
+            out.println("Write " + amount + "Speed: " + durationInSeconds + "s");
+            out.println("#".repeat(25));
         } else {
             out.println("Operation cancelled.");
         }
     }
-
 
     @Override
     public void writeProductsToFile(List<Product> productList) {
@@ -432,35 +438,6 @@ public class ServiceImpl implements Service {
             }
             writer.flush(); // Flush remaining data
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void loadingAnimation() {
-        try {
-            // Define the animation characters
-            String[] animationChars = { ".", "..", "...", "...." };
-            String[] animationDots = { "|", "/", "-", "\\" };
-            int timesToRepeat = 10;
-            System.out.println("#".repeat(25));
-
-            // Print the loading animation
-            for (int i = 0; i < timesToRepeat; i++) {
-                System.out.print("\rData is Loading " + animationDots[i % animationDots.length] + animationChars[i % animationChars.length]);
-                try {
-                    // Add a delay to control the speed of the animation
-                    Thread.sleep(120);
-                } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-            // Clear the loading animation
-            System.out.print("\rData is Loading ");
-            System.out.println();
-            System.out.println("#".repeat(25));
-
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
