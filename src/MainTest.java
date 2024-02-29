@@ -5,6 +5,8 @@ import service.Service;
 import service.ServiceImpl;
 import util.Animation;
 import util.AnimationImpl;
+import util.Pagination;
+import util.PaginationImpl;
 import view.Menu;
 import view.MenuImpl;
 
@@ -17,6 +19,7 @@ public class MainTest {
     static Service service = new ServiceImpl();
     static MethodForFile method = new MethodForFileImpl();
     static Animation animation = new AnimationImpl();
+    static Pagination pagination = new PaginationImpl();
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
@@ -62,6 +65,7 @@ public class MainTest {
                 }
                 case "o", "O" -> {
                     // set row code
+                    service.setRowsPerPage(scanner);
                 }
                 case "c", "C" -> {
                     // commit code

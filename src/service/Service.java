@@ -3,6 +3,7 @@ package service;
 import model.Product;
 
 import java.util.List;
+import java.util.Scanner;
 
 public interface Service {
     void createProduct(List<Product> productList);
@@ -13,4 +14,5 @@ public interface Service {
     void searchProduct(List<Product> productList);
     List<Product> readProductsFromFile(String fileName);
     void viewAllProduct(List<Product> productList);
+    void setRowsPerPage(Scanner scanner);
 }
