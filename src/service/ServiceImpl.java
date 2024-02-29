@@ -29,6 +29,8 @@ public class ServiceImpl implements Service {
     static MethodForFile method = new MethodForFileImpl();
     static Animation animation = new AnimationImpl();
     static final Scanner scanner = new Scanner(in);
+
+    int rowsPerPage = 8;
     @Override
     public void createProduct(List<Product> productList) {
         Product product = new Product();
@@ -297,12 +299,9 @@ public class ServiceImpl implements Service {
         double totalTimeSeconds = (endTime - startTime) / 1000.0;
         System.out.println("Completed: " + totalTimeSeconds + " seconds");
     }
-
-
     @Override
     public void viewAllProduct(List<Product> productList) {
-        int rowsPerPage = 8;
-        int totalPages = (int) Math.ceil((double) productList.size() / (double) rowsPerPage);
+        int totalPages = (int) Math.ceil((double) productList.size() / rowsPerPage);
         int currentPage = 1;
         int totalRecords = productList.size();
 
@@ -377,17 +376,85 @@ public class ServiceImpl implements Service {
         out.println("Record deleted successfully.");
     }
     @Override
-    public void searchProduct(List<Product> productList){
-        Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
-        out.print("Enter product name: ");
-        String name = scanner.nextLine();
-        for(Product product : productList){
-            if (product.getName().contains(name)){
-                viewAllProduct(productList);
+    public void searchProduct(List<Product> productList) {
+        Scanner scanner = new Scanner(System.in);
+        boolean searchByName = false;
+
+        do {
+            Table table2 = new Table(7, BorderStyle.UNICODE_DOUBLE_BOX_WIDE,ShownBorders.SURROUND);
+
+            out.println("> Select an option :");
+            table2.addCell("  1). Search by Product Code    |");
+            table2.addCell("  2). Search by Product Name    |");
+            table2.addCell("  3). Exit    ");
+            out.println(table2.render());
+            out.print("Enter option: ");
+
+            int option;
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                out.println("Invalid option. Please enter a number.");
+                continue;
+            }
+
+            switch (option) {
+                case 1:
+                    searchByCode(productList);
+                    break;
+                case 2:
+                    searchByName(productList);
+                    break;
+                case 3:
+                    return; // Exit the method
+                default:
+                    out.println("Invalid option. Please try again.");
+            }
+        } while (true);
+    }
+    private void searchByCode(List<Product> productList) {
+        out.print("Enter product code: ");
+        String code = scanner.nextLine();
+        boolean found = false;
+
+        List<Product> searchResults = new ArrayList<>();
+
+        for (Product product : productList) {
+            if (product.getCode().startsWith(code)) {
+                found = true;
+                searchResults.add(product);
             }
         }
 
+        if (!found) {
+            out.println("No products found with the given code prefix.");
+        } else {
+            out.println("Search Results:");
+            viewAllProduct(searchResults);
+        }
     }
+    private void searchByName(List<Product> productList) {
+        out.print("Enter product name: ");
+        String name = scanner.nextLine();
+        boolean found = false;
+
+        List<Product> searchResults = new ArrayList<>();
+
+        for (Product product : productList) {
+            if (product.getName().toLowerCase().contains(name.toLowerCase())) {
+                found = true;
+                searchResults.add(product);
+            }
+        }
+
+        if (!found) {
+            out.println("No products found with the given name.");
+        } else {
+            out.println("Search Results:");
+            viewAllProduct(searchResults);
+        }
+    }
+
     @Override
     public void randomProduct(List<Product> productList) {
         out.print("Enter random amount: ");
@@ -409,7 +476,10 @@ public class ServiceImpl implements Service {
                     productList.add(products[i]);
                 }
             }
-            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
+            // Write products to file using a separate thread
+            Thread writingThread = new Thread(() -> {
+                method.writeProductsToFile(productList, "product.txt");
+            });
             writingThread.start();
 
             try {
@@ -442,4 +512,25 @@ public class ServiceImpl implements Service {
         }
     }
 
+    @Override
+    public void setRowsPerPage(Scanner scanner) {
+        int newRowsPerPage;
+        boolean isValidInput = false;
+        do {
+            System.out.print("Enter the number of rows per page (must be a positive integer): ");
+            if (scanner.hasNextInt()) {
+                newRowsPerPage = scanner.nextInt();
+                if (newRowsPerPage > 0) {
+                    this.rowsPerPage = newRowsPerPage;
+                    isValidInput = true;
+                } else {
+                    System.out.println("Invalid input. Please enter a positive integer.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid integer.");
+                scanner.next(); // Consume the invalid input
+            }
+        } while (!isValidInput);
+        scanner.nextLine(); // Consume the remaining newline character
+    }
 }

@@ -5,6 +5,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import service.Service;
+import service.ServiceImpl;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,6 +20,7 @@ import static java.lang.System.*;
 
 public class MethodForFileImpl implements MethodForFile {
     static final Scanner scanner = new Scanner(in);
+    static Service service = new ServiceImpl();
 
     @Override
     public void backUpData() {
@@ -140,6 +142,62 @@ public class MethodForFileImpl implements MethodForFile {
             System.out.println("Error updating product in file: " + e.getMessage());
         }
     }
-
+    @Override
+    public void writeProductsToFile(List<Product> productList, String filename) {
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
+            for (Product product : productList) {
+                writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
+            }
+            writer.flush(); // Flush remaining data
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void Commit(List<Product> productList) {
+        List<Product> transferProducts = service.readProductsFromFile("transaction.txt");
+        if (!transferProducts.isEmpty()) {
+            System.out.print("You need to commit your record! [Yes/No] type [y/n]: ");
+            String ops = scanner.next();
+            if (ops.equalsIgnoreCase("y")) {
+                List<Product> productAfterUpdate = new ArrayList<>();
+                for (Product oldProduct : productList) {
+                    boolean updated = false;
+                    for (Product newProduct : transferProducts) {
+                        if (newProduct.getCode().equals(oldProduct.getCode())) {
+                            // Update existing product
+                            oldProduct.setName(newProduct.getName());
+                            oldProduct.setPrice(newProduct.getPrice());
+                            oldProduct.setQuantity(newProduct.getQuantity());
+                            oldProduct.setDate(newProduct.getDate());
+                            updated = true;
+                            break; // Exit inner loop once updated
+                        }
+                    }
+                    if (!updated) {
+                        // If product not updated, add it to the list
+                        productAfterUpdate.add(oldProduct);
+                    }
+                }
+                // Write updated products to file
+                writeProductsToFile(productAfterUpdate, "product.txt");
+                clearFile("transaction.txt");
+                System.out.println("You chose [Yes], You have saved your record!");
+            } else {
+                System.out.println("You chose [NO], You have not committed!");
+            }
+        } else {
+            System.out.println("Nothing to commit!!");
+        }
+    }
+    private void clearFile(String filename) {
+        File file = new File(filename);
+        try {
+            file.delete();
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
