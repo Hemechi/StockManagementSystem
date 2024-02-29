@@ -5,6 +5,7 @@ import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import service.Service;
+import service.ServiceImpl;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,13 +13,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 import static java.lang.System.*;
 
 public class MethodForFileImpl implements MethodForFile {
     static final Scanner scanner = new Scanner(in);
+    static Service service = new ServiceImpl();
 
     @Override
     public void backUpData() {
@@ -121,7 +122,7 @@ public class MethodForFileImpl implements MethodForFile {
         List<String> fileContent;
         try {
             // Read all lines from the file
-            fileContent = Files.readAllLines(Paths.get("product.txt"));
+            fileContent = Files.readAllLines(Paths.get("transaction.txt"));
 
             // Iterate through the lines and find the line to update
             for (int i = 0; i < fileContent.size(); i++) {
@@ -140,6 +141,5 @@ public class MethodForFileImpl implements MethodForFile {
             System.out.println("Error updating product in file: " + e.getMessage());
         }
     }
-
 
 }
