@@ -12,14 +12,11 @@ import util.Pagination;
 import util.PaginationImpl;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 import static java.lang.System.in;
 import static java.lang.System.out;
@@ -238,7 +235,7 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void readProductsFromFile(List<Product> productList) {
+    public List<Product> readProductsFromFile(List<Product> productList, String fileName) {
         long startTime = System.currentTimeMillis();
 
         // Show loading animation
@@ -298,6 +295,7 @@ public class ServiceImpl implements Service {
         long endTime = System.currentTimeMillis();
         double totalTimeSeconds = (endTime - startTime) / 1000.0;
         System.out.println("Completed: " + totalTimeSeconds + " seconds");
+        return productList;
     }
     @Override
     public void viewAllProduct(List<Product> productList) {

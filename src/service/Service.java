@@ -12,7 +12,7 @@ public interface Service {
     void editProduct(List<Product> productList);
     void deleteProduct(List<Product> productList);
     void searchProduct(List<Product> productList);
-    void readProductsFromFile(List<Product> productList);
+    List<Product> readProductsFromFile(List<Product> productList, String fileName);
     void writeProductsToFile(List<Product> productList);
     void viewAllProduct(List<Product> productList);
     void setRowsPerPage(Scanner scanner);

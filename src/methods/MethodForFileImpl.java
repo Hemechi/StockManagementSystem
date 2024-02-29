@@ -154,8 +154,8 @@ public class MethodForFileImpl implements MethodForFile {
         }
     }
     @Override
-    public void Commit(List<Product> productList) {
-        List<Product> transferProducts = service.readProductsFromFile("transaction.txt");
+    public void commit(List<Product> productList) {
+        List<Product> transferProducts = service.readProductsFromFile(productList,"transaction.txt");
         if (!transferProducts.isEmpty()) {
             System.out.print("You need to commit your record! [Yes/No] type [y/n]: ");
             String ops = scanner.next();
