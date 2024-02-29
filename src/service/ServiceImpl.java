@@ -345,29 +345,44 @@ public class ServiceImpl implements Service {
     }
     @Override
     public void deleteProduct(List<Product> productList) {
-        out.print("Enter product code: ");
-        String code = scanner.nextLine();
+        try {
+            System.out.print("Enter product code: ");
+            String code = scanner.nextLine();
 
-        Iterator<Product> iterator = productList.iterator();
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getCode().equals(code)) {
-                iterator.remove();
+            Iterator<Product> iterator = productList.iterator();
+            boolean found = false;
+            while (iterator.hasNext()) {
+                Product product = iterator.next();
+                if (product.getCode().equals(code)) {
+                    iterator.remove();
+                    found = true;
+                    break;
+                }
             }
-        }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt"))) {
-            for (Product product : productList) {
-                writer.write(product.getCode() + ",");
-                writer.write(product.getName() + ",");
-                writer.write(product.getPrice() + ",");
-                writer.write(product.getQuantity() + ",");
-                writer.write(product.getDate() + "\n");
+
+            if (!found) {
+                System.out.println("Product not found.");
+                return;
             }
-        } catch (IOException e) {
-            out.println("Error writing to file: " + e.getMessage());
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt"))) {
+                for (Product product : productList) {
+                    writer.write(product.getCode() + ",");
+                    writer.write(product.getName() + ",");
+                    writer.write(product.getPrice() + ",");
+                    writer.write(product.getQuantity() + ",");
+                    writer.write(product.getDate() + "\n");
+                }
+            } catch (IOException e) {
+                System.out.println("Error writing to file: " + e.getMessage());
+            }
+
+            System.out.println("Record deleted successfully.");
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
-        out.println("Record deleted successfully.");
     }
+
     @Override
     public void searchProduct(List<Product> productList) {
         Scanner scanner = new Scanner(System.in);

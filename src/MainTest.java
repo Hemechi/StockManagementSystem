@@ -58,7 +58,7 @@ public class MainTest {
                 }
                 case "d", "D" -> {
                     // delete code
-                   service.deleteProduct(productList);
+                    service.deleteProduct(productList);
                 }
                 case "s", "S" -> {
                     // search code
