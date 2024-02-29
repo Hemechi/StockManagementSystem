@@ -1,8 +1,9 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import model.Product;
+import service.ServiceImpl;
+
+import java.util.List;
 
 public class AnimationImpl implements Animation{
     @Override
@@ -32,13 +33,15 @@ public class AnimationImpl implements Animation{
 
             // Read data from file
             startTime = System.currentTimeMillis(); // Reset start time measurement
-            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-                while ((reader.readLine()) != null) {
-                    // Read the file line by line without doing anything
-                }
-            } catch (IOException e) {
-                System.out.println("Error reading file: " + e.getMessage());
-            }
+
+
+//            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+//                while ((reader.readLine()) != null) {
+//                    // Read the file line by line without doing anything
+//                }
+//            } catch (IOException e) {
+//                System.out.println("Error reading file: " + e.getMessage());
+//            }
             endTime = System.currentTimeMillis(); // End time measurement after reading data
             long durationReading = endTime - startTime; // Calculate reading duration
 

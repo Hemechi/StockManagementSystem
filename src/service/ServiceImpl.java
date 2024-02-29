@@ -232,7 +232,7 @@ public class ServiceImpl implements Service{
         }
     }
     @Override
-    public List<Product> readProductsFromFile(String fileName) {
+    public static List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
