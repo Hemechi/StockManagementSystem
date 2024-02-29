@@ -3,10 +3,6 @@ import methods.MethodForFileImpl;
 import model.Product;
 import service.Service;
 import service.ServiceImpl;
-import util.Animation;
-import util.AnimationImpl;
-import util.Pagination;
-import util.PaginationImpl;
 import view.Menu;
 import view.MenuImpl;
 
@@ -19,16 +15,13 @@ public class Main {
     static String backupDirectory = "backup/";
     static Service service = new ServiceImpl();
     static MethodForFile method = new MethodForFileImpl();
-    static Animation animation = new AnimationImpl();
-    static Pagination pagination = new PaginationImpl();
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
         service.readProductsFromFile(productList);
-        boolean isTrue = true;
         do {
              menuDisplay.displayMenu();
             // add Option Input
@@ -36,48 +29,38 @@ public class Main {
             System.out.print("> Select menu no -> ");
             String option = scanner.nextLine();
             switch (option) {
-                case "l", "L" -> {
+                case "l", "L" ->
                     // display code
                     service.viewAllProduct(productList);
-                } case "m","M"-> {
+                case "m","M"->
                     //random code
-
                     service.randomProduct(productList);
-                }
-                case "w", "W" -> {
+                case "w", "W" ->
                     // write code
                     service.createProduct(productList);
-                }
-                case "r", "R" -> {
+                case "r", "R" ->
                     // read code
                     service.readOnlyProduct(productList);
-                }
-                case "e", "E" -> {
+                case "e", "E" ->
                     // edit code
                    service.editProduct(productList);
-                }
-                case "d", "D" -> {
+                case "d", "D" ->
                     // delete code
                    service.deleteProduct(productList);
-                }
-                case "s", "S" -> {
+                case "s", "S" ->
                     // search code
                     service.searchProduct(productList);
-                }
-                case "o", "O" -> {
+                case "o", "O" ->
                     // set row code
                     service.setRowsPerPage(scanner);
-                }
                 case "c", "C" -> {
                     // commit code
                 }
-                case "k", "K" -> {
+                case "k", "K" ->
                     method.backUpData();
-                }
-                case "t", "T" -> {
+                case "t", "T" ->
                     // restore code
                    method.listBackupFiles(backupDirectory);
-                }
                 case "h", "H" -> {
                     System.out.println();
                     System.out.println("# Help Instruction");
@@ -88,11 +71,10 @@ public class Main {
                     menuDisplay.displayExitTable();
                     System.exit(0);
                 }
-                default -> {
+                default ->
                     // default code
                     System.out.println("Invalid input");
-                }
             }
-        } while (isTrue);
+        } while (true);
     }
 }
