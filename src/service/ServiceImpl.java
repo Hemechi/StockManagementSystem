@@ -269,7 +269,7 @@ public class ServiceImpl implements Service {
 
         try {
             fileReadingThread.join(); // Wait for the file reading thread to finish
-            animationThread.join(); // Wait for the animation thread to finish
+//            animationThread.join(); // Wait for the animation thread to finish
         } catch (InterruptedException e) {
             System.out.println("Thread interrupted: " + e.getMessage());
             Thread.currentThread().interrupt(); // Restore interrupted status
@@ -404,7 +404,7 @@ public class ServiceImpl implements Service {
 
             // Wait for both animation and writing threads to finish
             try {
-                animationThread.join();
+//                animationThread.join();
                 writingThread.join();
             } catch (InterruptedException e) {
                 out.println("Thread interrupted: " + e.getMessage());
