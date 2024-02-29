@@ -24,7 +24,7 @@ public class MainTest {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
-//        service.readProductsFromFile(productList);
+        service.readProductsFromFile(productList);
         boolean isTrue = true;
         do {
              menuDisplay.displayMenu();

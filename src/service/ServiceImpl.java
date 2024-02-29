@@ -262,8 +262,6 @@ public class ServiceImpl implements Service {
                         synchronized (productList) {
                             productList.add(product);
                         }
-                    } else {
-                        System.out.println("Invalid data in file: " + line);
                     }
                 }
             } catch (IOException e) {
