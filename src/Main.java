@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 
 
-public class MainTest {
+public class Main {
     static String backupDirectory = "backup/";
     static Service service = new ServiceImpl();
     static MethodForFile method = new MethodForFileImpl();
