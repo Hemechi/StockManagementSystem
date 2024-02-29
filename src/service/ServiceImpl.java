@@ -29,7 +29,7 @@ public class ServiceImpl implements Service {
 
     int rowsPerPage = 8;
     @Override
-    public void createProduct(List<Product> productList) {
+    public void createProduct(List<Product> productList ) {
         Product product = new Product();
 
         while (true) {
@@ -469,7 +469,7 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public void randomProduct(List<Product> productList) {
+    public void randomProduct(List<Product> productList ,String filename) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
@@ -491,7 +491,7 @@ public class ServiceImpl implements Service {
             }
             // Write products to file using a separate thread
             Thread writingThread = new Thread(() -> {
-                writeProductsToFile(productList);
+                writeProductsToFile(productList,filename);
             });
             writingThread.start();
 
@@ -513,8 +513,8 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void writeProductsToFile(List<Product> productList) {
-        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
+    public void writeProductsToFile(List<Product> productList , String filename) {
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(filename, true)))) {
             for (Product product : productList) {
                 writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
             }
@@ -543,7 +543,37 @@ public class ServiceImpl implements Service {
                 scanner.next(); // Consume the invalid input
             }
         } while (!isValidInput);
-        scanner.nextLine(); // Consume the remaining newline character
+        scanner.nextLine();
     }
+    @Override
+    public void commitData(List<Product> transactions, List<Product> productList, String filename) {
+        boolean foundMatch = false; // Flag to track if a matching product is found for the transaction
+
+        for (Product transaction : transactions) {
+            foundMatch = false; // Reset foundMatch for each transaction
+
+            // Iterate through productList to check for matching codes
+            for (Product product : productList) {
+                if (transaction.getCode().equals(product.getCode())) {
+                    foundMatch = true; // Set foundMatch to true if a match is found
+                    break; // No need to continue searching once a match is found
+                }
+            }
+
+            // If no match is found for the transaction, add it to the productList
+            if (!foundMatch) {
+                productList.add(transaction);
+                out.println("Transaction added to productList: " + transaction.getCode());
+            } else {
+                out.println("Transaction already exists in productList: " + transaction.getCode());
+            }
+        }
+
+        // Write productList to file after processing all transactions
+        writeProductsToFile(productList, filename);
+        out.println("Completed");
+    }
+
+
 
 }
