@@ -18,11 +18,13 @@ public class MainTest {
         System.out.println("Welcome to Stock Management System");
         UtilTextTable util = new UtilTextTable();
         util.display();
-        System.out.println("#".repeat(25));
-        System.out.println("Data is loading");
-        System.out.println("#".repeat(25));
+        method.loadData("product.txt");
+//        System.out.println("#".repeat(25));
+//        System.out.println("Data is loading");
+//        System.out.println("#".repeat(25));
         boolean isTrue = true;
         do {
+
             JTable jtable = new JTable();
             jtable.displayTable();
             // add Option Input
@@ -34,14 +36,15 @@ public class MainTest {
                     // display code
                     productList = method.readProductsFromFile("product.txt");
                     method.viewAllProduct(productList);
-
-//                    method.listBackupFiles(backupDirectory);
+//                   method.listBackupFiles(backupDirectory);
                 }
                 case "m", "M" -> {
+
                     // random code
                 }
+
                 case "w", "W" -> {
-                    // write code
+
                     method.createProduct(productList);
                 }
                 case "r", "R" -> {
@@ -61,6 +64,7 @@ public class MainTest {
                     method.searchProduct(productList);
                 }
                 case "o", "O" -> {
+                    method.setRowsPerPage(scanner);
                     // set row code
                 }
                 case "c", "C" -> {
