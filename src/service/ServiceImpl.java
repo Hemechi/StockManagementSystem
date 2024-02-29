@@ -345,8 +345,26 @@ public class ServiceImpl implements Service {
     }
     @Override
     public void deleteProduct(List<Product> productList) {
-        out.print("Enter product code: ");
-        String code = scanner.nextLine();
+        String code;
+        boolean validInput = false;
+
+        do {
+            System.out.print("Enter product code: ");
+            code = scanner.nextLine().toUpperCase();
+
+            // Check if the input matches any product code
+            for (Product product : productList) {
+                if (product.getCode().equals(code)) {
+                    validInput = true;
+                    break;
+                }
+            }
+
+            if (!validInput) {
+                System.out.println("Invalid product code. Please try again.");
+            }
+
+        } while (!validInput);
 
         Iterator<Product> iterator = productList.iterator();
         while (iterator.hasNext()) {
@@ -355,6 +373,7 @@ public class ServiceImpl implements Service {
                 iterator.remove();
             }
         }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt"))) {
             for (Product product : productList) {
                 writer.write(product.getCode() + ",");
@@ -364,9 +383,10 @@ public class ServiceImpl implements Service {
                 writer.write(product.getDate() + "\n");
             }
         } catch (IOException e) {
-            out.println("Error writing to file: " + e.getMessage());
+            System.out.println("Error writing to file: " + e.getMessage());
         }
-        out.println("Record deleted successfully.");
+
+        System.out.println("Record deleted successfully.");
     }
     @Override
     public void searchProduct(List<Product> productList) {
@@ -486,7 +506,7 @@ public class ServiceImpl implements Service {
             double durationInSeconds = duration / 1000.0;
             out.println("#Random Completed.");
             out.println("#".repeat(25));
-            out.println("Write " + amount + "Speed: " + durationInSeconds + "s");
+            out.println("Write " + amount + "  ||  Speed: " + durationInSeconds + "s");
             out.println("#".repeat(25));
         } else {
             out.println("Operation cancelled.");
@@ -503,8 +523,6 @@ public class ServiceImpl implements Service {
             e.printStackTrace();
         }
     }
-<<<<<<< HEAD
-=======
 
     @Override
     public void setRowsPerPage(Scanner scanner) {
@@ -527,5 +545,5 @@ public class ServiceImpl implements Service {
         } while (!isValidInput);
         scanner.nextLine(); // Consume the remaining newline character
     }
->>>>>>> 413f964caf022ad7fa163cfbf887cbda8858dcb3
+
 }
