@@ -98,6 +98,5 @@ public class MainTest {
         } while (isTrue);
     }
 
-    private static class product {
-    }
+
 }
