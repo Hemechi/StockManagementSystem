@@ -359,7 +359,6 @@ public class ServiceImpl implements Service {
                 iterator.remove();
             }
         }
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt"))) {
             for (Product product : productList) {
                 writer.write(product.getCode() + ",");
@@ -371,7 +370,6 @@ public class ServiceImpl implements Service {
         } catch (IOException e) {
             out.println("Error writing to file: " + e.getMessage());
         }
-
         out.println("Record deleted successfully.");
     }
     @Override
@@ -427,7 +425,6 @@ public class ServiceImpl implements Service {
             out.println("Operation cancelled.");
         }
     }
-
     @Override
     public void writeProductsToFile(List<Product> productList) {
         try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
@@ -439,5 +436,4 @@ public class ServiceImpl implements Service {
             e.printStackTrace();
         }
     }
-
 }
