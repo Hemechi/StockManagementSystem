@@ -235,7 +235,7 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public List<Product> readProductsFromFile(List<Product> productList, String fileName) {
+    public void readProductsFromFile(List<Product> productList) {
         long startTime = System.currentTimeMillis();
 
         // Show loading animation
@@ -261,8 +261,6 @@ public class ServiceImpl implements Service {
                         synchronized (productList) {
                             productList.add(product);
                         }
-                    } else {
-                        System.out.println("Invalid data in file: " + line);
                     }
                 }
             } catch (IOException e) {
@@ -295,7 +293,6 @@ public class ServiceImpl implements Service {
         long endTime = System.currentTimeMillis();
         double totalTimeSeconds = (endTime - startTime) / 1000.0;
         System.out.println("Completed: " + totalTimeSeconds + " seconds");
-        return productList;
     }
     @Override
     public void viewAllProduct(List<Product> productList) {
@@ -476,7 +473,7 @@ public class ServiceImpl implements Service {
             }
             // Write products to file using a separate thread
             Thread writingThread = new Thread(() -> {
-                method.writeProductsToFile(productList, "product.txt");
+                writeProductsToFile(productList);
             });
             writingThread.start();
 
