@@ -140,16 +140,6 @@ public class MethodForFileImpl implements MethodForFile {
             System.out.println("Error updating product in file: " + e.getMessage());
         }
     }
-    @Override
-    public void writeProductsToFile(List<Product> productList) {
-        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
-            for (Product product : productList) {
-                writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
-            }
-            writer.flush(); // Flush remaining data
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 }

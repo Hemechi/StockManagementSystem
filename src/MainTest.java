@@ -8,15 +8,10 @@ import util.AnimationImpl;
 import view.Menu;
 import view.MenuImpl;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-//import static methods.MethodForFile.readProductsFromFile;
-//import static util.Animation.loadData;
 
 public class MainTest {
     static String backupDirectory = "backup/";
@@ -26,7 +21,7 @@ public class MainTest {
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
         animation.loadData("product.txt");
@@ -40,7 +35,6 @@ public class MainTest {
             switch (option) {
                 case "l", "L" -> {
                     // display code
-                    productList = service.readProductsFromFile("product.txt");
                     service.viewAllProduct(productList);
                 } case "m","M"-> {
                     //random code

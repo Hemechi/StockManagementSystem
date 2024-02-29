@@ -17,11 +17,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static java.lang.System.in;
 import static java.lang.System.out;
 
-public class ServiceImpl implements Service{
+public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
     static MethodForFile method = new MethodForFileImpl();
     static final Scanner scanner = new Scanner(in);
@@ -232,29 +233,57 @@ public class ServiceImpl implements Service{
         }
     }
     @Override
-    public static List<Product> readProductsFromFile(String fileName) {
+    public List<Product> readProductsFromFile(String fileName) {
         List<Product> productList = new ArrayList<>();
+        long startTime = System.currentTimeMillis(); // Record start time
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 5) {
-                    String code = parts[0].trim();
-                    String name = parts[1].trim();
-                    double price = Double.parseDouble(parts[2].trim());
-                    int quantity = Integer.parseInt(parts[3].trim());
-                    LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
+        Thread fileReadingThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",", 5); // Limit split to 5 parts
+                    if (parts.length == 5) {
+                        String code = parts[0];
+                        String name = parts[1];
+                        double price = Double.parseDouble(parts[2]);
+                        int quantity = Integer.parseInt(parts[3]);
+                        LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
 
-                    Product product = new Product(code, name, price, quantity, date);
-                    // Add new products at the beginning of the list
-                    productList.add(0, product);
-                } else {
-                    System.out.println("Invalid data in file: " + line);
+                        Product product = new Product(code, name, price, quantity, date);
+                        synchronized (productList) {
+                            productList.add(product);
+                        }
+                    } else {
+                        System.out.println("Invalid data in file: " + line);
+                    }
                 }
+            } catch (IOException e) {
+                System.out.println("Error reading file: " + e.getMessage());
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                System.out.println("Error parsing data: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("An unexpected error occurred: " + e.getMessage());
             }
-        } catch (IOException | NumberFormatException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+        });
+        fileReadingThread.start();
+
+        try {
+            fileReadingThread.join(); // Wait for the file reading thread to finish
+            animationThread.join(); // Wait for the animation thread to finish
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted: " + e.getMessage());
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        }
+
+        long endTime = System.currentTimeMillis(); // Record end time
+        double totalTimeSeconds = (endTime - startTime) / 1000.0; // Calculate total time taken in seconds
+        System.out.println("Total time taken to read products: " + totalTimeSeconds + " seconds");
+
+        // Perform a read operation to ensure data is flushed
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            while (reader.readLine() != null) { /* Read the file to the end */ }
+        } catch (IOException e) {
+            System.out.println("Error closing file: " + e.getMessage());
         }
 
         return productList;
@@ -365,13 +394,22 @@ public class ServiceImpl implements Service{
                 products[i].setPrice(0.0);
                 products[i].setQuantity(0);
                 products[i].setDate(LocalDate.now());
-                productList.add(products[i]);
+                synchronized (productList) {
+                    productList.add(products[i]);
+                }
             }
-            // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> {
-                method.writeProductsToFile(productList);
-            });
+            // Create a writing thread
+            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
             writingThread.start();
+
+            // Wait for both animation and writing threads to finish
+            try {
+                animationThread.join();
+                writingThread.join();
+            } catch (InterruptedException e) {
+                out.println("Thread interrupted: " + e.getMessage());
+                Thread.currentThread().interrupt(); // Restore interrupted status
+            }
 
             long endTime = System.currentTimeMillis(); // Record end time
             long duration = endTime - startTime; // Calculate duration
@@ -384,4 +422,47 @@ public class ServiceImpl implements Service{
             out.println("Operation cancelled.");
         }
     }
+
+
+    @Override
+    public void writeProductsToFile(List<Product> productList) {
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
+            for (Product product : productList) {
+                writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
+            }
+            writer.flush(); // Flush remaining data
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void loadingAnimation() {
+        try {
+            // Define the animation characters
+            String[] animationChars = { ".", "..", "...", "...." };
+            String[] animationDots = { "|", "/", "-", "\\" };
+            int timesToRepeat = 10;
+            System.out.println("#".repeat(25));
+
+            // Print the loading animation
+            for (int i = 0; i < timesToRepeat; i++) {
+                System.out.print("\rData is Loading " + animationDots[i % animationDots.length] + animationChars[i % animationChars.length]);
+                try {
+                    // Add a delay to control the speed of the animation
+                    Thread.sleep(120);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            // Clear the loading animation
+            System.out.print("\rData is Loading ");
+            System.out.println();
+            System.out.println("#".repeat(25));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

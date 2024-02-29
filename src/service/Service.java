@@ -12,5 +12,7 @@ public interface Service {
     void deleteProduct(List<Product> productList);
     void searchProduct(List<Product> productList);
     List<Product> readProductsFromFile(String fileName);
+    void writeProductsToFile(List<Product> productList);
     void viewAllProduct(List<Product> productList);
+    void loadingAnimation();
 }
