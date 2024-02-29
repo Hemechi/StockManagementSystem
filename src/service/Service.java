@@ -18,5 +18,4 @@ public interface Service {
     void setRowsPerPage(Scanner scanner);
     void commitData(List<Product> Transactions , List<Product> productList  ,String filename);
 
-    void commitData(List<Product> transactions, List<Product> productList);
 }

@@ -546,7 +546,7 @@ public class ServiceImpl implements Service {
         scanner.nextLine();
     }
     @Override
-    public void commitData(List<Product> transactions, List<Product> productList) {
+    public void commitData(List<Product> transactions, List<Product> productList,String filename) {
         for (Product transaction : transactions) {
             boolean found = false;
             for (Product product : productList) {
