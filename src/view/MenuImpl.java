@@ -1,15 +1,25 @@
-package util;
+package view;
 
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
-public class JTable {
-    public void displayTable(){
+public class MenuImpl implements Menu  {
+    @Override
+    public void displayStyle(){
+        String text = """
+                ┏┓┏┓┏┳┓┏┓┳┓  ┏┓┳┳┓┏┓
+                ┃ ┗┓ ┃ ┣┫┃┃  ┗┓┃┃┃┗┓
+                ┗┛┗┛ ┻ ┛┗┻┛  ┗┛┛ ┗┗┛                  
+                """ ;
+        System.out.print(text);
+    }
+    @Override
+    public void displayMenu() {
         System.out.println();
         System.out.println("#".repeat(25));
         System.out.println("# Application Menu");
-        Table table = new Table(7, BorderStyle.UNICODE_DOUBLE_BOX_WIDE,ShownBorders.SURROUND);
+        Table table = new Table(7, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         table.setColumnWidth(0,15,25);
         table.setColumnWidth(1, 15,25);
         table.setColumnWidth(2,15,25);
@@ -38,13 +48,15 @@ public class JTable {
         table.addCell("| (H)elp");
         table.addCell("| E(x)it");
         System.out.println(table.render());
-
     }
+
+    @Override
     public void displayExitTable(){
         Table tableExit = new Table(9, BorderStyle.DESIGN_CAFE);
         tableExit.addCell("               GOOD BYE!         ");
         System.out.println(tableExit.render());
     }
+    @Override
     public void displayHelpTable(){
         Table tableHelp = new Table(1, BorderStyle.CLASSIC_LIGHT_WIDE,ShownBorders.SURROUND);
         tableHelp.addCell("1.      Press       l : Display product as table");
@@ -67,6 +79,4 @@ public class JTable {
         System.out.println(tableHelp.render());
 
     }
-
 }
-
