@@ -89,7 +89,7 @@ public class ServiceImpl implements Service {
         product.setDate(LocalDate.now());
 
         // Add the new product to the beginning of the list
-        productList.add(0, product);
+        productList.addFirst(product);
 
         // Write the new product to the file
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
@@ -108,7 +108,7 @@ public class ServiceImpl implements Service {
     public void editProduct(List<Product> productList) {
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
-        String code = scanner.nextLine();
+        String code = scanner.nextLine().toUpperCase();
         boolean productFound = false;
 
         for (Product product : productList) {
@@ -239,9 +239,7 @@ public class ServiceImpl implements Service {
         long startTime = System.currentTimeMillis();
 
         // Show loading animation
-        Thread animationThread = new Thread(() -> {
-            animation.loadData();
-        });
+        Thread animationThread = new Thread(() -> animation.loadData());
         animationThread.start();
 
         // Start reading file
@@ -490,9 +488,7 @@ public class ServiceImpl implements Service {
                 }
             }
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> {
-                writeProductsToFile(productList);
-            });
+            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
             writingThread.start();
 
             try {
