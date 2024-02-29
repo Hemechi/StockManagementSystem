@@ -469,7 +469,7 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public void randomProduct(List<Product> productList ,String filename) {
+    public void randomProduct( List<Product> productList, String filename) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
@@ -546,34 +546,21 @@ public class ServiceImpl implements Service {
         scanner.nextLine();
     }
     @Override
-    public void commitData(List<Product> transactions, List<Product> productList, String filename) {
-        boolean foundMatch = false; // Flag to track if a matching product is found for the transaction
-
+    public void commitData(List<Product> transactions, List<Product> productList) {
         for (Product transaction : transactions) {
-            foundMatch = false; // Reset foundMatch for each transaction
-
-            // Iterate through productList to check for matching codes
+            boolean found = false;
             for (Product product : productList) {
                 if (transaction.getCode().equals(product.getCode())) {
-                    foundMatch = true; // Set foundMatch to true if a match is found
-                    break; // No need to continue searching once a match is found
+                    found = true;
+                    break;
                 }
             }
-
-            // If no match is found for the transaction, add it to the productList
-            if (!foundMatch) {
+            if (!found) {
+                // Add the transaction to productList
                 productList.add(transaction);
-                out.println("Transaction added to productList: " + transaction.getCode());
-            } else {
-                out.println("Transaction already exists in productList: " + transaction.getCode());
             }
         }
-
-        // Write productList to file after processing all transactions
-        writeProductsToFile(productList, filename);
-        out.println("Completed");
     }
-
 
 
 }

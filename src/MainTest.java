@@ -72,6 +72,7 @@ public class MainTest {
                 case "c", "C" -> {
                     // commit code
                     service.commitData(Transactions,productList,"product.txt");
+
                 }
                 case "k", "K" -> {
                     method.backUpData();
