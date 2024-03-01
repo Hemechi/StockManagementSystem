@@ -35,10 +35,8 @@ public class Main {
                     service.viewAllProduct(productList);
                 case "m","M"->
                     //random code
-
                     service.randomProduct(transactions,productList,"transaction.txt");
-                }
-                case "w", "W" -> {
+                case "w", "W" ->
                     // write code
                     service.createProduct(productList);
                 case "r", "R" ->
@@ -59,8 +57,6 @@ public class Main {
                 case "c", "C" -> {
                     // commit code
                     service.commitData(transactions,productList,"product.txt");
-
-
                 }
                 case "k", "K" ->
                     method.backUpData();

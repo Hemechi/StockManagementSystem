@@ -12,7 +12,6 @@ import util.Pagination;
 import util.PaginationImpl;
 
 import java.io.*;
-import java.security.ProtectionDomain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -489,10 +488,8 @@ public class ServiceImpl implements Service {
                 }
             }
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> writeProductsToFile(productList));
-            Thread writingThread = new Thread(() -> {
-                writeProductsToFile(productList,filename);
-            });
+            Thread writingThread = new Thread(() ->
+                writeProductsToFile(productList,filename));
             writingThread.start();
 
             try {
@@ -548,9 +545,7 @@ public class ServiceImpl implements Service {
     @Override
     public void commitData(List<Product> transactions, List<Product> productList, String filename) {
         synchronized (transactions) {
-            for (Product product : productList) {
-                transactions.add(product);
-            }
+            transactions.addAll(productList);
             writeProductsToFile(transactions, filename);
             clearData("transaction.txt");
             out.println("Commit Completed");
