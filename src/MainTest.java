@@ -23,7 +23,7 @@ public class MainTest {
     static Pagination pagination = new PaginationImpl();
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
-    static List<Product> Transactions = new ArrayList<Product>();
+    static List<Product> transactions = new ArrayList<Product>();
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
@@ -43,7 +43,7 @@ public class MainTest {
                 } case "m","M"-> {
                     //random code
 
-                    service.randomProduct(productList,"transaction.txt");
+                    service.randomProduct(transactions,productList,"transaction.txt");
                 }
                 case "w", "W" -> {
                     // write code
@@ -71,7 +71,7 @@ public class MainTest {
                 }
                 case "c", "C" -> {
                     // commit code
-                    service.commitData(Transactions,productList,"product.txt");
+                    service.commitData(transactions,productList,"product.txt");
 
                 }
                 case "k", "K" -> {

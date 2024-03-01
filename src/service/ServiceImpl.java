@@ -469,7 +469,7 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public void randomProduct( List<Product> productList, String filename) {
+    public void randomProduct(List<Product> transactions , List<Product> productList  ,String filename) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
@@ -494,6 +494,7 @@ public class ServiceImpl implements Service {
                 writeProductsToFile(productList,filename);
             });
             writingThread.start();
+
 
             try {
                 writingThread.join();
@@ -546,21 +547,15 @@ public class ServiceImpl implements Service {
         scanner.nextLine();
     }
     @Override
-    public void commitData(List<Product> transactions, List<Product> productList,String filename) {
-        for (Product transaction : transactions) {
-            boolean found = false;
+    public void commitData(List<Product> transactions, List<Product> productList, String filename) {
+        synchronized (transactions) {
+            // Loop through each product in the productList and add it to the transactions list
             for (Product product : productList) {
-                if (transaction.getCode().equals(product.getCode())) {
-                    found = true;
-                    break;
-                }
+                transactions.add(product);
             }
-            if (!found) {
-                // Add the transaction to productList
-                productList.add(transaction);
-            }
+            writeProductsToFile(transactions, filename);
+            out.println("Commit Completed");
         }
     }
-
 
 }

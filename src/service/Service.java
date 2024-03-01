@@ -8,7 +8,7 @@ import java.util.Scanner;
 public interface Service {
     void createProduct(List<Product> productList);
     void readOnlyProduct(List<Product> productList);
-    void randomProduct(List<Product> productList, String filename);
+    void randomProduct(List<Product> Transactions , List<Product> productList  ,String filename);
     void editProduct(List<Product> productList);
     void deleteProduct(List<Product> productList);
     void searchProduct(List<Product> productList);
