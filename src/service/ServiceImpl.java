@@ -403,7 +403,7 @@ public class ServiceImpl implements Service {
 
             int option;
             try {
-                option = Integer.parseInt(scanner.nextLine());
+                option = Integer.parseInt(scanner.nextLine().toUpperCase());
             } catch (NumberFormatException e) {
                 out.println("Invalid option. Please enter a number.");
                 continue;
