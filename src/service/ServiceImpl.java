@@ -619,6 +619,7 @@ public class ServiceImpl implements Service {
                         case 'N':
                         case 'n':
                             out.println("Exiting without committing data...");
+                            transactions.clear();
                             break;
                         default:
                             out.println("Action canceled.");
