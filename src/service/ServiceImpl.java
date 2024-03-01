@@ -491,8 +491,6 @@ public class ServiceImpl implements Service {
 
             }
 
-
-
             try {
                 writingThread.join();
             } catch (InterruptedException e) {
