@@ -68,12 +68,8 @@ public class Main {
                     System.out.println("# Help Instruction");
                     menuDisplay.displayHelpTable();
                 }
-                case "x", "X" -> {
+                case "x", "X" ->
                     service.exitProgram(transactions,productList,"transaction.txt");
-                    System.out.println();
-                    menuDisplay.displayExitTable();
-//
-                }
                 default ->
                     // default code
                     System.out.println("Invalid input");

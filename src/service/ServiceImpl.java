@@ -10,6 +10,8 @@ import util.Animation;
 import util.AnimationImpl;
 import util.Pagination;
 import util.PaginationImpl;
+import view.Menu;
+import view.MenuImpl;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import static java.lang.System.*;
 public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
     static MethodForFile method = new MethodForFileImpl();
+    static Menu menuDisplay = new MenuImpl();
     static Animation animation = new AnimationImpl();
     static final Scanner scanner = new Scanner(in);
 
@@ -278,7 +281,7 @@ public class ServiceImpl implements Service {
 
         // Record end time
         long endTime = System.currentTimeMillis();
-        double totalTimeSeconds = (endTime - startTime) / 1000.0;
+        double totalTimeSeconds = (endTime - startTime) /1000.0;
         System.out.println("Completed: " + totalTimeSeconds + " seconds");
     }
     @Override
@@ -477,9 +480,7 @@ public class ServiceImpl implements Service {
                 }
             }
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> {
-                writeProductsToFile(productList,filename);
-            });
+            Thread writingThread = new Thread(() -> writeProductsToFile(productList,filename));
             synchronized (productList) {
                 for (Product product : productList) {
                     transactions.add(product);
@@ -579,7 +580,7 @@ public class ServiceImpl implements Service {
             }
         }
         else {
-            out.println("Exiting program...");
+            menuDisplay.displayExitTable();
             System.exit(0);
 
         }
@@ -614,8 +615,6 @@ public class ServiceImpl implements Service {
                         case 'Y':
                         case 'y':
                             commitData(transactions, productList, filename);
-                            out.println("committing completed...");
-
                             break;
                         case 'N':
                         case 'n':
