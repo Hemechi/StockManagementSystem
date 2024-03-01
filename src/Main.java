@@ -40,19 +40,16 @@ public class Main {
                 case "w", "W" ->
                     // write code
                     service.createProduct(productList,"transaction.txt");
-                }
-                case "r", "R" -> {
+                case "r", "R" ->
                     // read code
                     service.readOnlyProduct(productList);
                 case "e", "E" ->
                     // edit code
                    service.editProduct(productList,"transaction.txt");
-                }
-                case "d", "D" -> {
+                case "d", "D" ->
                     // delete code
                    service.deleteProduct(productList,"product.txt");
-                }
-                case "s", "S" -> {
+                case "s", "S" ->
                     // search code
                     service.searchProduct(productList);
                 case "o", "O" ->
