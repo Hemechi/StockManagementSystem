@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public interface Service {
-    void createProduct(List<Product> productList);
+    void createProduct(List<Product> productList , String filename);
     void readOnlyProduct(List<Product> productList);
     void randomProduct(List<Product> Transactions , List<Product> productList  ,String filename);
-    void editProduct(List<Product> productList);
-    void deleteProduct(List<Product> productList);
+    void editProduct(List<Product> Transactions , String filename);
+    void deleteProduct(List<Product> productList , String filename);
     void searchProduct(List<Product> productList);
     void readProductsFromFile(List<Product> productList);
     void writeProductsToFile(List<Product> productList,String filename);
@@ -18,5 +18,6 @@ public interface Service {
     void setRowsPerPage(Scanner scanner);
     void commitData(List<Product> Transactions , List<Product> productList  ,String filename);
     void clearData(String fileName);
-
+    void  exitProgram (List<Product> Transactions , List<Product> productList  ,String filename);
+    void checkTransactions(List<Product> Transactions , List<Product> productList  ,String filename);
 }

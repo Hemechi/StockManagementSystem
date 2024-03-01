@@ -28,6 +28,7 @@ public class MainTest {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
+        service.checkTransactions(transactions,productList,"transaction.txt");
         service.readProductsFromFile(productList);
         boolean isTrue = true;
         do {
@@ -47,7 +48,7 @@ public class MainTest {
                 }
                 case "w", "W" -> {
                     // write code
-                    service.createProduct(productList);
+                    service.createProduct(productList,"transaction.txt");
                 }
                 case "r", "R" -> {
                     // read code
@@ -55,11 +56,11 @@ public class MainTest {
                 }
                 case "e", "E" -> {
                     // edit code
-                   service.editProduct(productList);
+                   service.editProduct(productList,"transaction.txt");
                 }
                 case "d", "D" -> {
                     // delete code
-                   service.deleteProduct(productList);
+                   service.deleteProduct(productList,"product.txt");
                 }
                 case "s", "S" -> {
                     // search code
@@ -88,9 +89,10 @@ public class MainTest {
                     menuDisplay.displayHelpTable();
                 }
                 case "x", "X" -> {
+                    service.exitProgram(transactions,productList,"transaction.txt");
                     System.out.println();
                     menuDisplay.displayExitTable();
-                    System.exit(0);
+//
                 }
                 default -> {
                     // default code
