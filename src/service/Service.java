@@ -17,5 +17,6 @@ public interface Service {
     void viewAllProduct(List<Product> productList);
     void setRowsPerPage(Scanner scanner);
     void commitData(List<Product> Transactions , List<Product> productList  ,String filename);
+    void clearData(String fileName);
 
 }

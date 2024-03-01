@@ -12,6 +12,7 @@ import util.Pagination;
 import util.PaginationImpl;
 
 import java.io.*;
+import java.security.ProtectionDomain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -496,6 +497,7 @@ public class ServiceImpl implements Service {
             writingThread.start();
 
 
+
             try {
                 writingThread.join();
             } catch (InterruptedException e) {
@@ -515,7 +517,7 @@ public class ServiceImpl implements Service {
     }
     @Override
     public void writeProductsToFile(List<Product> productList , String filename) {
-        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(filename, true)))) {
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(filename)))) {
             for (Product product : productList) {
                 writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
             }
@@ -549,13 +551,21 @@ public class ServiceImpl implements Service {
     @Override
     public void commitData(List<Product> transactions, List<Product> productList, String filename) {
         synchronized (transactions) {
-            // Loop through each product in the productList and add it to the transactions list
             for (Product product : productList) {
                 transactions.add(product);
             }
             writeProductsToFile(transactions, filename);
+            clearData("transaction.txt");
             out.println("Commit Completed");
         }
+        transactions.clear();
     }
-
+    @Override
+    public void clearData(String fileName){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
+            writer.write("");
+        } catch (IOException e) {
+            out.println(e.getMessage());
+        }
+    }
 }
