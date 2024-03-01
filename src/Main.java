@@ -54,10 +54,9 @@ public class Main {
                 case "o", "O" ->
                     // set row code
                     service.setRowsPerPage(scanner);
-                case "c", "C" -> {
+                case "c", "C" ->
                     // commit code
                     service.commitData(transactions,productList,"product.txt");
-                }
                 case "k", "K" ->
                     method.backUpData();
                 case "t", "T" ->
