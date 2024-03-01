@@ -119,7 +119,7 @@ public class MethodForFileImpl implements MethodForFile {
         List<String> fileContent;
         try {
             // Read all lines from the file
-            fileContent = Files.readAllLines(Paths.get("transaction.txt"));
+            fileContent = Files.readAllLines(Paths.get("product.txt"));
 
             // Iterate through the lines and find the line to update
             for (int i = 0; i < fileContent.size(); i++) {

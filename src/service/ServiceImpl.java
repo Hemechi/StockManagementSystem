@@ -18,8 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import static java.lang.System.in;
-import static java.lang.System.out;
+import static java.lang.System.*;
 
 public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
@@ -29,7 +28,7 @@ public class ServiceImpl implements Service {
 
     int rowsPerPage = 8;
     @Override
-    public void createProduct(List<Product> productList ) {
+    public void createProduct(List<Product> productList ,String filename) {
         Product product = new Product();
 
         while (true) {
@@ -92,26 +91,16 @@ public class ServiceImpl implements Service {
         productList.addFirst(product);
 
         // Write the new product to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("product.txt", true))) {
-            writer.write(product.getCode() + ",");
-            writer.write(product.getName() + ",");
-            writer.write(product.getPrice() + ",");
-            writer.write(product.getQuantity() + ",");
-            writer.write(product.getDate() + ",");
-            writer.newLine();
-            writer.flush();
-        } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
-        }
+        writeProductsToFile(productList,filename);
     }
     @Override
-    public void editProduct(List<Product> productList) {
+    public void editProduct(List<Product> Transactions , String filename) {
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
         String code = scanner.nextLine().toUpperCase();
         boolean productFound = false;
 
-        for (Product product : productList) {
+        for (Product product : Transactions) {
             if (product.getCode().equals(code)) {
                 productFound = true;
                 table.addCell("Code : " + product.getCode());
@@ -342,7 +331,7 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void deleteProduct(List<Product> productList) {
+    public void deleteProduct(List<Product> productList,String filename) {
         String code;
         boolean validInput = false;
 
@@ -488,9 +477,16 @@ public class ServiceImpl implements Service {
                 }
             }
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() ->
-                writeProductsToFile(productList,filename));
-            writingThread.start();
+            Thread writingThread = new Thread(() -> {
+                writeProductsToFile(productList,filename);
+            });
+            synchronized (productList) {
+                for (Product product : productList) {
+                    transactions.add(product);
+                }
+                writeProductsToFile(transactions, filename);
+
+            }
 
             try {
                 writingThread.join();
@@ -560,4 +556,91 @@ public class ServiceImpl implements Service {
             out.println(e.getMessage());
         }
     }
+    @Override
+    public void exitProgram(List<Product> transactions, List<Product> productList, String filename) {
+        if (!transactions.isEmpty()) {
+            out.println("You have pending transactions. Do you want to commit data before exiting? (C: Commit, E: Exit, any other key to cancel)");
+            char option = scanner.next().charAt(0);
+            switch (option) {
+                case 'C':
+                case 'c':
+                    commitData(transactions, productList, filename);
+                    out.println("Exiting program...");
+                    System.exit(0);
+                    break;
+                case 'E':
+                case 'e':
+                    out.println("Exiting without committing data...");
+                    System.exit(0);
+                    break;
+                default:
+                    out.println("Action canceled.");
+                    break;
+            }
+        }
+        else {
+            out.println("Exiting program...");
+            System.exit(0);
+
+        }
+    }
+
+    @Override
+    public void checkTransactions(List<Product> transactions, List<Product> productList, String filename) {
+        Thread fileReadingThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",", 5);
+                    if (parts.length == 5) {
+                        String code = parts[0];
+                        String name = parts[1];
+                        double price = Double.parseDouble(parts[2]);
+                        int quantity = Integer.parseInt(parts[3]);
+                        LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
+
+                        Product product = new Product(code, name, price, quantity, date);
+                        synchronized (transactions) {
+                            transactions.add(product);
+                        }
+                    }
+                }
+
+                // After reading the file, check if there are pending transactions
+                if (!transactions.isEmpty()) {
+                    out.println("You have pending transactions. Do you want to commit data before exiting? (Y: Commit, N: Exit, any other key to cancel)");
+                    char option = scanner.next().charAt(0);
+                    switch (option) {
+                        case 'Y':
+                        case 'y':
+                            commitData(transactions, productList, filename);
+                            out.println("committing completed...");
+
+                            break;
+                        case 'N':
+                        case 'n':
+                            out.println("Exiting without committing data...");
+                            break;
+                        default:
+                            out.println("Action canceled.");
+                            break;
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Error reading file: " + e.getMessage());
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                System.out.println("Error parsing data: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("An unexpected error occurred: " + e.getMessage());
+            }
+        });
+        fileReadingThread.start();
+        try {
+            fileReadingThread.join();
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted: " + e.getMessage());
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
         menuDisplay.displayStyle();
+        service.checkTransactions(transactions,productList,"transaction.txt");
         service.readProductsFromFile(productList);
         do {
              menuDisplay.displayMenu();
@@ -38,17 +39,20 @@ public class Main {
                     service.randomProduct(transactions,productList,"transaction.txt");
                 case "w", "W" ->
                     // write code
-                    service.createProduct(productList);
-                case "r", "R" ->
+                    service.createProduct(productList,"transaction.txt");
+                }
+                case "r", "R" -> {
                     // read code
                     service.readOnlyProduct(productList);
                 case "e", "E" ->
                     // edit code
-                   service.editProduct(productList);
-                case "d", "D" ->
+                   service.editProduct(productList,"transaction.txt");
+                }
+                case "d", "D" -> {
                     // delete code
-                   service.deleteProduct(productList);
-                case "s", "S" ->
+                   service.deleteProduct(productList,"product.txt");
+                }
+                case "s", "S" -> {
                     // search code
                     service.searchProduct(productList);
                 case "o", "O" ->
@@ -68,9 +72,10 @@ public class Main {
                     menuDisplay.displayHelpTable();
                 }
                 case "x", "X" -> {
+                    service.exitProgram(transactions,productList,"transaction.txt");
                     System.out.println();
                     menuDisplay.displayExitTable();
-                    System.exit(0);
+//
                 }
                 default ->
                     // default code
