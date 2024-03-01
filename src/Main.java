@@ -17,6 +17,7 @@ public class Main {
     static MethodForFile method = new MethodForFileImpl();
     static Menu menuDisplay = new MenuImpl();
     static List<Product> productList = new ArrayList<>();
+    static List<Product> transactions = new ArrayList<Product>();
 
     public static void main(String[] args) {
         System.out.println("Welcome to Stock Management System");
@@ -34,8 +35,10 @@ public class Main {
                     service.viewAllProduct(productList);
                 case "m","M"->
                     //random code
-                    service.randomProduct(productList);
-                case "w", "W" ->
+
+                    service.randomProduct(transactions,productList,"transaction.txt");
+                }
+                case "w", "W" -> {
                     // write code
                     service.createProduct(productList);
                 case "r", "R" ->
@@ -55,6 +58,9 @@ public class Main {
                     service.setRowsPerPage(scanner);
                 case "c", "C" -> {
                     // commit code
+                    service.commitData(transactions,productList,"product.txt");
+
+
                 }
                 case "k", "K" ->
                     method.backUpData();

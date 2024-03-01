@@ -12,6 +12,7 @@ import util.Pagination;
 import util.PaginationImpl;
 
 import java.io.*;
+import java.security.ProtectionDomain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ public class ServiceImpl implements Service {
 
     int rowsPerPage = 8;
     @Override
-    public void createProduct(List<Product> productList) {
+    public void createProduct(List<Product> productList ) {
         Product product = new Product();
 
         while (true) {
@@ -467,7 +468,7 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public void randomProduct(List<Product> productList) {
+    public void randomProduct(List<Product> transactions , List<Product> productList  ,String filename) {
         out.print("Enter random amount: ");
         int amount = scanner.nextInt();
         out.print("Are you sure you want to random " + amount + " Product? [Y/n]: ");
@@ -489,6 +490,9 @@ public class ServiceImpl implements Service {
             }
             // Write products to file using a separate thread
             Thread writingThread = new Thread(() -> writeProductsToFile(productList));
+            Thread writingThread = new Thread(() -> {
+                writeProductsToFile(productList,filename);
+            });
             writingThread.start();
 
             try {
@@ -509,8 +513,8 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void writeProductsToFile(List<Product> productList) {
-        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream("product.txt", true)))) {
+    public void writeProductsToFile(List<Product> productList , String filename) {
+        try (PrintWriter writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(filename)))) {
             for (Product product : productList) {
                 writer.println(product.getCode() + "," + product.getName() + "," + product.getPrice() + "," + product.getQuantity() + "," + product.getDate());
             }
@@ -539,6 +543,26 @@ public class ServiceImpl implements Service {
                 scanner.next(); // Consume the invalid input
             }
         } while (!isValidInput);
-        scanner.nextLine(); // Consume the remaining newline character
+        scanner.nextLine();
+    }
+    @Override
+    public void commitData(List<Product> transactions, List<Product> productList, String filename) {
+        synchronized (transactions) {
+            for (Product product : productList) {
+                transactions.add(product);
+            }
+            writeProductsToFile(transactions, filename);
+            clearData("transaction.txt");
+            out.println("Commit Completed");
+        }
+        transactions.clear();
+    }
+    @Override
+    public void clearData(String fileName){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
+            writer.write("");
+        } catch (IOException e) {
+            out.println(e.getMessage());
+        }
     }
 }
