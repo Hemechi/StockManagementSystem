@@ -1,9 +1,5 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
 import static java.lang.System.out;
 
 public class AnimationImpl implements Animation{
@@ -19,7 +15,7 @@ public class AnimationImpl implements Animation{
                 out.print("\rData is Loading " + animationDots[i % animationDots.length] + animationChars[i % animationChars.length]);
                 try {
 
-                    Thread.sleep(125);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     out.println(e.getMessage());
                 }

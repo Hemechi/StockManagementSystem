@@ -10,9 +10,10 @@ import util.Animation;
 import util.AnimationImpl;
 import util.Pagination;
 import util.PaginationImpl;
+import view.Menu;
+import view.MenuImpl;
 
 import java.io.*;
-import java.security.ProtectionDomain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import static java.lang.System.*;
 public class ServiceImpl implements Service {
     static Pagination pagination = new PaginationImpl();
     static MethodForFile method = new MethodForFileImpl();
+    static Menu menuDisplay = new MenuImpl();
     static Animation animation = new AnimationImpl();
     static final Scanner scanner = new Scanner(in);
 
@@ -89,7 +91,7 @@ public class ServiceImpl implements Service {
         product.setDate(LocalDate.now());
 
         // Add the new product to the beginning of the list
-        productList.add(0, product);
+        productList.addFirst(product);
 
         // Write the new product to the file
         writeProductsToFile(productList,filename);
@@ -98,7 +100,7 @@ public class ServiceImpl implements Service {
     public void editProduct(List<Product> Transactions , String filename) {
         Table table = new Table(1, BorderStyle.UNICODE_DOUBLE_BOX_WIDE, ShownBorders.SURROUND);
         out.print("Enter product code: ");
-        String code = scanner.nextLine();
+        String code = scanner.nextLine().toUpperCase();
         boolean productFound = false;
 
         for (Product product : Transactions) {
@@ -229,9 +231,7 @@ public class ServiceImpl implements Service {
         long startTime = System.currentTimeMillis();
 
         // Show loading animation
-        Thread animationThread = new Thread(() -> {
-            animation.loadData();
-        });
+        Thread animationThread = new Thread(() -> animation.loadData());
         animationThread.start();
 
         // Start reading file
@@ -281,7 +281,7 @@ public class ServiceImpl implements Service {
 
         // Record end time
         long endTime = System.currentTimeMillis();
-        double totalTimeSeconds = (endTime - startTime) / 1000.0;
+        double totalTimeSeconds = (endTime - startTime) /1000.0;
         System.out.println("Completed: " + totalTimeSeconds + " seconds");
     }
     @Override
@@ -395,7 +395,7 @@ public class ServiceImpl implements Service {
 
             int option;
             try {
-                option = Integer.parseInt(scanner.nextLine());
+                option = Integer.parseInt(scanner.nextLine().toUpperCase());
             } catch (NumberFormatException e) {
                 out.println("Invalid option. Please enter a number.");
                 continue;
@@ -480,9 +480,7 @@ public class ServiceImpl implements Service {
                 }
             }
             // Write products to file using a separate thread
-            Thread writingThread = new Thread(() -> {
-                writeProductsToFile(productList,filename);
-            });
+            Thread writingThread = new Thread(() -> writeProductsToFile(productList,filename));
             synchronized (productList) {
                 for (Product product : productList) {
                     transactions.add(product);
@@ -544,9 +542,7 @@ public class ServiceImpl implements Service {
     @Override
     public void commitData(List<Product> transactions, List<Product> productList, String filename) {
         synchronized (transactions) {
-            for (Product product : productList) {
-                transactions.add(product);
-            }
+            transactions.addAll(productList);
             writeProductsToFile(transactions, filename);
             clearData("transaction.txt");
             out.println("Commit Completed");
@@ -584,7 +580,7 @@ public class ServiceImpl implements Service {
             }
         }
         else {
-            out.println("Exiting program...");
+            menuDisplay.displayExitTable();
             System.exit(0);
 
         }
@@ -619,8 +615,6 @@ public class ServiceImpl implements Service {
                         case 'Y':
                         case 'y':
                             commitData(transactions, productList, filename);
-                            out.println("committing completed...");
-
                             break;
                         case 'N':
                         case 'n':

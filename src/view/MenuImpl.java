@@ -10,7 +10,7 @@ public class MenuImpl implements Menu  {
         String text = """
                 ┏┓┏┓┏┳┓┏┓┳┓  ┏┓┳┳┓┏┓
                 ┃ ┗┓ ┃ ┣┫┃┃  ┗┓┃┃┃┗┓
-                ┗┛┗┛ ┻ ┛┗┻┛  ┗┛┛ ┗┗┛                  
+                ┗┛┗┛ ┻ ┛┗┻┛  ┗┛┛ ┗┗┛                 \s
                 """ ;
         System.out.print(text);
     }

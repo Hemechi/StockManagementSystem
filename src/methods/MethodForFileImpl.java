@@ -4,8 +4,6 @@ import model.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
-import service.Service;
-import service.ServiceImpl;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,7 +17,6 @@ import static java.lang.System.*;
 
 public class MethodForFileImpl implements MethodForFile {
     static final Scanner scanner = new Scanner(in);
-    static Service service = new ServiceImpl();
 
     @Override
     public void backUpData() {
