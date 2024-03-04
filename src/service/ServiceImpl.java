@@ -485,8 +485,7 @@ public class ServiceImpl implements Service {
                 for (Product product : productList) {
                     transactions.add(product);
                 }
-                writeProductsToFile(transactions, filename);
-
+                writeProductsToFile(transactions, "transaction.txt");
             }
 
             try {
@@ -542,8 +541,8 @@ public class ServiceImpl implements Service {
     @Override
     public void commitData(List<Product> transactions, List<Product> productList, String filename) {
         synchronized (transactions) {
-            transactions.addAll(productList);
             writeProductsToFile(transactions, filename);
+            transactions.addAll(productList);
             clearData("transaction.txt");
             out.println("Commit Completed");
         }
@@ -565,7 +564,7 @@ public class ServiceImpl implements Service {
             switch (option) {
                 case 'C':
                 case 'c':
-                    commitData(transactions, productList, filename);
+                    commitData(transactions, productList,"product.txt");
                     out.println("Exiting program...");
                     System.exit(0);
                     break;
@@ -609,12 +608,12 @@ public class ServiceImpl implements Service {
 
                 // After reading the file, check if there are pending transactions
                 if (!transactions.isEmpty()) {
-                    out.println("You have pending transactions. Do you want to commit data before exiting? (Y: Commit, N: Exit, any other key to cancel)");
+                    out.println("You have pending transactions. Do you want to commit data before exiting? (Y: Yes , N: No, any other key to cancel)");
                     char option = scanner.next().charAt(0);
                     switch (option) {
                         case 'Y':
                         case 'y':
-                            commitData(transactions, productList, filename);
+                            commitData(transactions, productList,"product.txt");
                             break;
                         case 'N':
                         case 'n':
