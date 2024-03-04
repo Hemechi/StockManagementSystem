@@ -480,12 +480,9 @@ public class ServiceImpl implements Service {
             // Write products to file using a separate thread
             Thread writingThread = new Thread(() -> writeProductsToFile(productList,filename));
             synchronized (productList) {
-                for (Product product : productList) {
-                    transactions.add(product);
-                }
+                transactions.addAll(productList);
                 writeProductsToFile(transactions, "transaction.txt");
             }
-
             try {
                 writingThread.join();
             } catch (InterruptedException e) {
