@@ -41,7 +41,7 @@ public class Main {
                     service.createProduct(productList,"transaction.txt");
                 case "r", "R" ->
                     // read code
-                    service.setRowsPerPage(scanner);
+                    service.readOnlyProduct(productList);
                 case "e", "E" ->
                     // edit code
                    service.editProduct(productList,"transaction.txt");
