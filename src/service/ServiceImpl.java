@@ -230,22 +230,20 @@ public class ServiceImpl implements Service {
     public void readProductsFromFile(List<Product> productList) {
         long startTime = System.currentTimeMillis();
 
-        // Show loading animation
         Thread animationThread = new Thread(() -> animation.loadData());
         animationThread.start();
 
-        // Start reading file
         Thread fileReadingThread = new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(new FileReader("product.txt"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",", 5); // Limit split to 5 parts
+                    String[] parts = line.split(",", 5);
                     if (parts.length == 5) {
                         String code = parts[0];
                         String name = parts[1];
                         double price = Double.parseDouble(parts[2]);
                         int quantity = Integer.parseInt(parts[3]);
-                        LocalDate date = LocalDate.parse(parts[4].trim()); // Assuming date is stored in ISO_LOCAL_DATE format
+                        LocalDate date = LocalDate.parse(parts[4].trim());
 
                         Product product = new Product(code, name, price, quantity, date);
                         synchronized (productList) {
@@ -409,7 +407,7 @@ public class ServiceImpl implements Service {
                     searchByName(productList);
                     break;
                 case 3:
-                    return; // Exit the method
+                    return;
                 default:
                     out.println("Invalid option. Please try again.");
             }
@@ -528,6 +526,7 @@ public class ServiceImpl implements Service {
                 if (newRowsPerPage > 0) {
                     this.rowsPerPage = newRowsPerPage;
                     isValidInput = true;
+                    System.out.println("You set row completed.");
                 } else {
                     System.out.println("Invalid input. Please enter a positive integer.");
                 }
@@ -606,9 +605,8 @@ public class ServiceImpl implements Service {
                     }
                 }
 
-                // After reading the file, check if there are pending transactions
                 if (!transactions.isEmpty()) {
-                    out.println("You have pending transactions. Do you want to commit data before exiting? (Y: Yes , N: No, any other key to cancel)");
+                    out.println("You have pending transactions. Do you want to commit data ? (Y: Yes , N: No, any other key to cancel)");
                     char option = scanner.next().charAt(0);
                     switch (option) {
                         case 'Y':
@@ -637,8 +635,7 @@ public class ServiceImpl implements Service {
             fileReadingThread.join();
         } catch (InterruptedException e) {
             System.out.println("Thread interrupted: " + e.getMessage());
-            Thread.currentThread().interrupt(); // Restore interrupted status
+            Thread.currentThread().interrupt();
         }
     }
-
 }

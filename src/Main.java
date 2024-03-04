@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Main {
     static String backupDirectory = "backup/";
     static Service service = new ServiceImpl();
@@ -42,7 +41,7 @@ public class Main {
                     service.createProduct(productList,"transaction.txt");
                 case "r", "R" ->
                     // read code
-                    service.readOnlyProduct(productList);
+                    service.setRowsPerPage(scanner);
                 case "e", "E" ->
                     // edit code
                    service.editProduct(productList,"transaction.txt");
